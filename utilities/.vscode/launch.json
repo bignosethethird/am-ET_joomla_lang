@@ -6,32 +6,12 @@
   "configurations": [
 
     {
-      "type": "perl",
+      "type": "bashdb",
       "request": "launch",
-      "name": "Perl-Debug local",
-      "console": "integratedTerminal",
-      "program": "${workspaceFolder}/${relativeFile}",
-      "exec": "perl",
-      "execArgs": [],
-      "root": "${workspaceRoot}/",
-      "inc": [],
-      "args": ["-q=Hello %s, my name is Jeff, the god of biscuits. It is the god's will.","-s=en","-t=de","-d"],
-      "env": {},
-      "debugRaw": false,
-      "debugLog": false,
-      "stopOnEntry": true,
-      "sessions": "single"
-    },
-    {
-      "type": "perl",
-      "request": "launch",
-      "name": "Perl-Debug remote",
-      "console": "remote",
-      "program": "${workspaceFolder}/${relativeFile}",
-      "root": "${workspaceRoot}/",
-      "stopOnEntry": true,
-      "port": 5000,
-      "sessions": "single"
+      "name": "Bash-Debug (simplest configuration)",
+      "program": "${file}",
+      "args": ["-p=~/git/joomla_cms","-d","-g","-v"],
     }
   ]
 }
+

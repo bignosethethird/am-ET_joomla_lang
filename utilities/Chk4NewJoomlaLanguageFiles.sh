@@ -83,46 +83,61 @@
 # (Yes, it will run on Windows too once the UNIX bits are installed)
 # Author:  Gerrit Hoekstra gerrit@hoekstra.co.uk
 # Website: www.hoekstra.co.uk
+#
+# TODO:
+# ----
+# Complete linting of this script by running this:
+#   shellcheck -e SC2086,SC2016,SC2059,SC2153,SC2001 Chk4NewJoomlaLanguageFiles.sh 
 
 
 # Set your local working folder (no trailing slashes)
-WORKFOLDER="${HOME}/joomlawork"
-if [[ ! -d $WORKFOLDER ]]; then
-  printf "[$LINENO] Making $WORKFOLDER...\n"
-  mkdir -p $WORKFOLDER
+workfolder="${HOME}/joomlawork"
+if [ ! -d $workfolder ]; then
+  printf "[$LINENO] Making $workfolder...\n"
+  mkdir -p $workfolder
 fi
-if [[ ! -d $WORKFOLDER ]]; then
-  printf "[$LINENO] Working folder $WORKFOLDER does not exist."
+if [ ! -d $workfolder ]; then
+  printf "[$LINENO] Working folder $workfolder does not exist."
   exit 1
 fi
-if [[ ! -w $WORKFOLDER ]]; then
-  printf "[$LINENO] Working folder $WORKFOLDER is not writable."
+if [ ! -w $workfolder ]; then
+  printf "[$LINENO] Working folder $workfolder is not writable."
   exit 1
 fi
-TMPFILE=$(mktemp /tmp/joomla.XXXX)
 
+tmpfile1=$(mktemp /tmp/joomla.1.XXXX)
+tmpfile2=$(mktemp /tmp/joomla.2.XXXX)
+tmpfile3=$(mktemp /tmp/joomla.3.XXXX)
+tmpfile4=$(mktemp /tmp/joomla.4.XXXX)
+tmpfile5=$(mktemp /tmp/joomla.5.XXXX)
+tmpfile6=$(mktemp /tmp/joomla.6.XXXX)
+tmpfile7=$(mktemp /tmp/joomla.7.XXXX)
+tmpfile8=$(mktemp /tmp/joomla.8.XXXX)
+tmpfile9=$(mktemp /tmp/joomla.9.XXXX)
+tmpfile10=$(mktemp /tmp/joomla.10.XXXX)
+tmpfile11=$(mktemp /tmp/joomla.11.XXXX)
+tmpfile12=$(mktemp /tmp/joomla.12.XXXX)
+tmpfile13=$(mktemp /tmp/joomla.13.XXXX)
+tmpfile14=$(mktemp /tmp/joomla.14.XXXX)
+tmpfile15=$(mktemp /tmp/joomla.15.XXXX)
+tmpfile16=$(mktemp /tmp/joomla.16.XXXX)
 
-TODAY=$(date +"%Y-%m-%d")
 YEAR=$(date +"%Y")
-EXITCODE=0
-COMMAND="$0" # Save command
 CWD=$PWD
-VERBOSE=0
-dictionary=""
 
 # Set up logging - this is important if we run this as a cron job
-PROGNAME=${0##*/}
-[[ ! -d $WORKFOLDER ]] &&  mkdir -p $WORKFOLDER
-LOGFILE="${WORKFOLDER}/${PROGNAME%\.*}.log"
-touch $LOGFILE 2>/dev/null
+progname=${0##*/}
+[ ! -d $workfolder ] &&  mkdir -p $workfolder
+logfile="${workfolder}/${progname%\.*}.log"
+touch $logfile 2>/dev/null
 if [[ $? -ne 0 ]]; then
-  LOGFILE="~/${PROGNAME%\.*}.log"
-  touch "$LOGFILE" 2>/dev/null
+  logfile="${HOME}/${progname%\.*}.log"
+  touch "$logfile" 2>/dev/null
   if [[ $? -ne 0 ]]; then
-    LOGFILE="${PROGNAME%\.*}.log"
-    touch "$LOGFILE" 2>/dev/null
+    logfile="${progname%\.*}.log"
+    touch "$logfile" 2>/dev/null
     if [[ $? -ne 0 ]]; then
-      printf "Could not write to $LOGFILE. Exiting...\n"    
+      printf "Could not write to $logfile. Exiting...\n"    
       exit 1
     fi
   fi
@@ -132,24 +147,24 @@ fi
 # Diagnostics
 #============================================================================#
 function DEBUG {
-  [[ -z $DEBUG ]] && return
+  [[ -z $option_debug ]] && return
   TS=$(date '+%Y.%m.%d %H:%M:%S')
-  printf "[$TS][$TARGETLINGO][DEBUG]" >> $LOGFILE
+  printf "[$TS][$target_lingo][DEBUG]" >> $logfile
   while [[ -n $1 ]] ; do
-    printf "%s " $1 >>  $LOGFILE
+    printf "%s " $1 >>  $logfile
     shift
   done
-  printf "\n" >> $LOGFILE
+  printf "\n" >> $logfile
 }
 
 function INFO {
   TS=$(date '+%Y.%m.%d %H:%M:%S')
-  echo "[$TS][$TARGETLINGO][INFO ]$@" | tee -a $LOGFILE
+  echo "[$TS][$target_lingo][INFO ]$@" | tee -a $logfile
 }
 
 function WARN {
   TS=$(date '+%Y.%m.%d %H:%M:%S')
-  echo "[$TS][$TARGETLINGO][WARN ]$@" | tee -a $LOGFILE
+  echo "[$TS][$target_lingo][WARN ]$@" | tee -a $logfile
 }
 
 # Death to the evil function for it must surely die!
@@ -157,7 +172,7 @@ function WARN {
 # Exit Code:   1
 function DIE {
   TS=$(date '+%Y.%m.%d %H:%M:%S')
-  echo "[$TS][$TARGETLINGO][FATAL]$@" | tee -a $LOGFILE
+  echo "[$TS][$target_lingo][FATAL]$@" | tee -a $logfile
   exit 1
 }
 
@@ -166,16 +181,25 @@ function DIE {
 #============================================================================#
 function cleanup {
   INFO "[$LINENO] === END [PID $$] on signal $1. Cleaning up ==="
-  rm ${WORKFOLDER}/DelTemp 2>/dev/null
-  rm ${WORKFOLDER}/AddTemp 2>/dev/null
-  rm ${WORKFOLDER}/SOURCELINGOTemp  2>/dev/null
-  rm ${WORKFOLDER}/TARGETLINGOTemp  2>/dev/null
-  rm ${WORKFOLDER}/${TARGETLINGO}_files 2>/dev/null
-  rm ${WORKFOLDER}/${SOURCELINGO}_files 2>/dev/null
-  rm $TMPFILE 2>/dev/null
+  rm "$tmpfile1" 2>/dev/null
+  rm "$tmpfile2" 2>/dev/null
+  rm "$tmpfile3" 2>/dev/null
+  rm "$tmpfile4" 2>/dev/null
+  rm "$tmpfile5" 2>/dev/null
+  rm "$tmpfile6" 2>/dev/null
+  rm "$tmpfile7" 2>/dev/null
+  rm "$tmpfile8" 2>/dev/null
+  rm "$tmpfile9" 2>/dev/null
+  rm "$tmpfile10" 2>/dev/null
+  rm "$tmpfile11" 2>/dev/null
+  rm "$tmpfile12" 2>/dev/null
+  rm "$tmpfile13" 2>/dev/null
+  rm "$tmpfile14" 2>/dev/null
+  rm "$tmpfile15" 2>/dev/null
+  rm "$tmpfile16" 2>/dev/null
   exit
 }
-for sig in KILL TERM INT EXIT; do trap "cleanup $sig" "$sig" ; done
+for sig in KILL TERM INT EXIT; do trap 'cleanup $sig' "$sig" ; done
 
 #============================================================================#
 # Build Functions
@@ -196,10 +220,10 @@ function CreateWorkspace {
   [[ "${parentdir##*/}" != "$GITREPONAME" ]] && DIE "[$LINENO] This utility needs to be run from the sandbox $GITREPONAME/utilities"
   # Local subversion sandbox in workfolder to pull latest code cut down to
   local_sandbox_dir="$parentdir"
-  rm -fr $WORKFOLDER/admin 2>/dev/null
-  mkdir -p $WORKFOLDER/admin
-  rm -fr $WORKFOLDER/site 2>/dev/null
-  mkdir -p $WORKFOLDER/site
+  rm -fr $workfolder/admin 2>/dev/null
+  mkdir -p $workfolder/admin
+  rm -fr $workfolder/site 2>/dev/null
+  mkdir -p $workfolder/site
 }
 
 function usage {
@@ -233,9 +257,9 @@ OPTIONS (Note that there is an '=' sign between argument and value):
           repository and suggests candidates.
   -v, --verbose
           Verbose screen output. All output will also be logged to files in 
-          $WORKFOLDER
+          $workfolder
   -d, --debug
-          Output debug messages to screen and $WORKFOLDER
+          Output debug messages to screen and $workfolder
   -h, --help
           Displays this text
 
@@ -272,17 +296,17 @@ function UnpackSourcePackage {
   
   case ${source_package##*\.} in
     bz2)
-      cd ${joomla_source_dir}
+      cd ${joomla_source_dir} || LOGDIE "[$LINENO] Could not change directory to ${joomla_source_dir}"
       RETCODE=$(tar -xjf $source_package)
-      cd -
+      cd - || LOGDIE "[$LINENO] Could not change directory back"
       if [[ $RETCODE -ne 0 ]]; then
 	      DIE "[$LINENO] There was a problem unpacking the Joomla TAR.BZ2 source package $source_package into ${joomla_source_dir}"
       fi
       ;;
     gz)
-      cd ${joomla_source_dir}
+      cd ${joomla_source_dir} || LOGDIE "[$LINENO] Could not change directory to ${joomla_source_dir}"
       RETCODE=$(tar -xzf $source_package)
-      cd -
+      cd - || LOGDIE "[$LINENO] Could not change directory back"
       if [[ $RETCODE -ne 0 ]]; then
 	      DIE "[$LINENO] There was a problem unpacking the Joomla TAR.GZ source package $source_package into ${joomla_source_dir}"
       fi
@@ -299,116 +323,11 @@ function UnpackSourcePackage {
   esac
 }
 
-# Uses Google Translate Version 2.0
-# Example: google_translate "Hello, where are we now?" en af
-# Prints:  Hallo, waar is ons nou?
-# For this to work:
-# You need to be a Google Cloud Platform user, although use Google Translate API is free
-# Install the Google Cloud SDK
-# Got to https://cloud.google.com/translate/docs/quickstart
-# Set up a Google Cloud Platform project if you don't already have one that you can piggy-back off in the GCP console
-# Download private as a JSON file and keep in a place where it will not be deleted, like ${HOME}/.gcp/[projectname]-[key].json
-# export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/.gcp/[projectname]-[key].json"
-# Add this line above to your ~/.bashrc file. Use ${HOME}, not '~'.
-# Test it with this command: 
-# gcloud auth application-default print-access-token
-# It should return a long key string.
-google_translate () 
-{ 
-  string_to_translate="$1"
-  translated_string=""
-
-  # Mark bits in string with [[..]] that should not be translated 
-  #                                          HTML Tags             Placeholders {}        Placeholders []          Placeholders %1$s %03c %d %e  Function Name: JFTP: :write
-  marked_translation_islands=$(echo ${string_to_translate} | sed -e 's/<[^>]*>/[[&]]/g' -e 's/{[^{]*}/[[&]]/g' -e 's/\[[^{]*\]/[[&]]/g' -e 's/%[^ ]*[sdec]/[[&]]/g' -e 's/^.*: :[^: ]*/[[&]]/g')
-
-  if [[ "$marked_translation_islands" != "$string_to_translate" ]]; then
-
-    # delimiter string
-    delimiter="||"
-
-    # Get non-translation texts into array
-    #   DoulbeBar-separated string '||'
-    non_translation_string=$(echo $marked_translation_islands | sed -e 's/[^\[]*\[\[//' -e "s/\]\][^\[]*\[\[/${delimiter}/g" -e 's/\]\].*//' )
-    
-    #length of main string
-    strLen=${#non_translation_string}
-    #length of delimiter string
-    dLen=${#delimiter}
-    
-    #iterator for length of string
-    i=0
-    #length tracker for ongoing substring
-    wordLen=0
-    #starting position for ongoing substring
-    strP=0
-    
-    non_translation_strings=()
-    while [ $i -lt $strLen ]; do
-        if [ $delimiter == ${non_translation_string:$i:$dLen} ]; then
-            non_translation_strings+=(${non_translation_string:strP:$wordLen})
-            DEBUG "[$LINENO] Adding non-translation string >>${non_translation_string:strP:$wordLen}<<"
-            strP=$(( i + dLen ))
-            wordLen=0
-            i=$(( i + dLen ))
-        fi
-        i=$(( i + 1 ))
-        wordLen=$(( wordLen + 1 ))
-    done
-    non_translation_strings+=(${non_translation_string:strP:$wordLen})
-
-    # Number of non-translated islands of text
-    num_non_translation_strings=${#non_translation_strings[@]}
-    DEBUG "[$LINENO] Number of non-translated islands of text: ${num_non_translation_strings}"
-
-    # Translate everything, stuff in brackets may or may not be translated, but will be replaced with original replacements in any case:    
-    key=$(gcloud auth application-default print-access-token)
-    [[ $? -ne 0 ]] && DIE "[$LINENO] Failed to get Google Translate key"    
-    [[ -n $VERBOSE ]] && INFO "[$LINENO] Translating >>${marked_translation_islands}<<"
-    curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer "$key --data "{
-      'q': '${marked_translation_islands}',
-      'source': '${2}',
-      'target': '${3}',
-      'format': 'text'
-    }" "https://translation.googleapis.com/language/translate/v2" -o $TMPFILE
-    translated_string=$(jq '.data.translations[0].translatedText' $TMPFILE | sed -e 's/^"//g' -e 's/"$//g')
-    error_code=$(jq '.error.code' $TMPFILE)
-    error_message=$(jq '.error.message' $TMPFILE)
-    [[ "$error_code" != "null" ]] && DIE "[$LINENO] Error $error_code: $error_message"
-    
-    for i in $(seq 0  $((num_non_translation_strings-1))); do
-      translated_string=$(echo $translated_string | sed -e "s/\[\[[^\]]*\]\]/${non_translation_strings[i]}/")
-    done
-
-  else    
-    key=$(gcloud auth application-default print-access-token)
-    [[ $? -ne 0 ]] && DIE "[$LINENO] Failed to get Google Translate key"    
-    [[ -n $VERBOSE ]] && INFO "[$LINENO] Translating >>$string_to_translate<<"
-    curl -s -X POST -H "Content-Type: application/json" -H "Authorization: Bearer "$key --data "{
-      'q': '${marked_translation_islands}',
-      'source': '${2}',
-      'target': '${3}',
-      'format': 'text'
-    }" "https://translation.googleapis.com/language/translate/v2" -o $TMPFILE
-    translated_string=$(jq '.data.translations[0].translatedText' $TMPFILE | sed -e 's/^"//g' -e 's/"$//g')
-    error_code=$(jq '.error.code' $TMPFILE)
-    error_message=$(jq '.error.message' $TMPFILE)
-    [[ "$error_code" != "null" ]] && DIE "[$LINENO] Error $error_code: $error_message"
-
-  fi
-  [[ -n $VERBOSE ]] && INFO "[$LINENO] to: >>$translated_string<<"
-
-  # Flush buffers
-  sync
-
-  echo $translated_string
-}
-
 #============================================================================#
 # Main program
 #============================================================================#
 
-INFO "[$LINENO] === BEGIN [PID $$] $PROGNAME ==="
+INFO "[$LINENO] === BEGIN [PID $$] $progname ==="
 
 ReadConfiguration
 CreateWorkspace
@@ -425,30 +344,30 @@ while [[ $1 = -* ]]; do
   case $ARG in
     "--package_source" | "--package-source" | "-p")
       if [[ -z $source_package ]]; then
-        source_package=$VAL; [[ $VAL = $ARG ]] && shift && source_package=$1
+        source_package=$VAL; [[ $VAL = "$ARG" ]] && shift && source_package=$1
         source_package=$(echo ${source_package} | sed -e "s|~|${HOME}|g")        
       fi
       ;;
     "--lexicon" | "-l")
       dictionary="use"
-      lexicon=$VAL; [[ $VAL = $ARG ]] && shift && lexicon=$1
+      lexicon=$VAL; [[ $VAL = "$ARG" ]] && shift && lexicon=$1
       lexicon=$(echo $lexicon | sed -e "s|~|${HOME}|g") 
       ;;
     "--google" | "-g")
-      GOOGLELOOKUP="use"
+      option_googletranslate="use"
       ;;
     "--suggestions" | "-s")
-      SUGGESTIONS="use"
+      option_suggestions="use"
       ;;
     "--help" | "-h" )
       usage
       ;;
     "--verbose" | "-v" )
-      VERBOSE=1
+      option_verbose=1
       ;;
     "--debug" | "-d" )
-      DEBUG=1
-      VERBOSE=1
+      option_debug=1
+      option_verbose=1
       ;;
     *)
       print "Invalid option: $1"
@@ -458,10 +377,13 @@ while [[ $1 = -* ]]; do
   shift
 done
 
-# Check input parameters
-if [[ -z $TARGETLINGO ]]; then
+# Check input parameters from config file
+target_lingo=$TARGETLINGO
+source_lingo=$SOURCELINGO
+if [[ -z $target_lingo ]]; then
   DIE "[$LINENO] Target language not specified"
 fi
+# Check input parameters from command line
 if [[ -z $source_package ]]; then
   DIE "[$LINENO] Joomla installation package not specified" 
 fi
@@ -471,10 +393,13 @@ fi
 if [[ -n $dictionary && ! -f $lexicon ]]; then
   DIE "[$LINENO] Lexicon file $lexicon could not be found. Specify full path."
 fi
+# Default parameters
+[[ -n $option_googletranslate ]] && unset $option_suggestions
 
-# Make ISO-639-1 language code from ISO-639-0 codes: (en-GB => en)
-SOURCELINGO1=$(echo $SOURCELINGO | sed -e 's/-..//')
-TARGETLINGO1=$(echo $TARGETLINGO | sed -e 's/-..//')
+# Make ISO-639-1 language code from ISO-639-0 codes: (e.g. en-GB => en)
+source_lingo_1=${source_lingo/-[A-Z]*/}
+target_lingo_1=${target_lingo/-[A-Z]*/}
+
 
 INFO "[$LINENO] Checking / fixing target subversion directory layout"
 
@@ -498,60 +423,60 @@ INFO "[$LINENO] Checking / fixing target subversion directory layout"
 
 
 # Create any missing directories:
-[[ ! -d "$local_sandbox_dir/administrator/language/${TARGETLINGO}" ]]                 && mkdir -p "$local_sandbox_dir/administrator/language/${TARGETLINGO}"
+[[ ! -d "$local_sandbox_dir/administrator/language/${target_lingo}" ]]                 && mkdir -p "$local_sandbox_dir/administrator/language/${target_lingo}"
 [[ ! -d "$local_sandbox_dir/administrator/language/overrides" ]]                      && mkdir -p "$local_sandbox_dir/administrator/language/overrides"
-[[ ! -d "$local_sandbox_dir/administrator/help/${TARGETLINGO}" ]]                     && mkdir -p "$local_sandbox_dir/administrator/help/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/administrator/modules/mod_multilangstatus/language/${TARGETLINGO}" ]] && mkdir -p "$local_sandbox_dir/administrator/modules/mod_multilangstatus/language/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/administrator/modules/mod_stats_admin/language/${TARGETLINGO}" ]] && mkdir -p "$local_sandbox_dir/administrator/modules/mod_stats_admin/language/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/administrator/modules/mod_version/language/${TARGETLINGO}" ]] && mkdir -p "$local_sandbox_dir/administrator/modules/mod_version/language/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/administrator/templates/hathor/language/${TARGETLINGO}" ]] && mkdir -p "$local_sandbox_dir/administrator/templates/hathor/language/${TARGETLINGO}" 
-[[ ! -d "$local_sandbox_dir/administrator/templates/bluestork/language/${TARGETLINGO}" ]] && mkdir -p "$local_sandbox_dir/administrator/templates/bluestork/language/${TARGETLINGO}" 
-[[ ! -d "$local_sandbox_dir/administrator/templates/isis/language/${TARGETLINGO}" ]]  && mkdir -p "$local_sandbox_dir/administrator/templates/isis/language/${TARGETLINGO}" 
-[[ ! -d "$local_sandbox_dir/installation/language/${TARGETLINGO}" ]]                  && mkdir -p "$local_sandbox_dir/installation/language/${TARGETLINGO}"
+[[ ! -d "$local_sandbox_dir/administrator/help/${target_lingo}" ]]                     && mkdir -p "$local_sandbox_dir/administrator/help/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/administrator/modules/mod_multilangstatus/language/${target_lingo}" ]] && mkdir -p "$local_sandbox_dir/administrator/modules/mod_multilangstatus/language/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/administrator/modules/mod_stats_admin/language/${target_lingo}" ]] && mkdir -p "$local_sandbox_dir/administrator/modules/mod_stats_admin/language/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/administrator/modules/mod_version/language/${target_lingo}" ]] && mkdir -p "$local_sandbox_dir/administrator/modules/mod_version/language/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/administrator/templates/hathor/language/${target_lingo}" ]] && mkdir -p "$local_sandbox_dir/administrator/templates/hathor/language/${target_lingo}" 
+[[ ! -d "$local_sandbox_dir/administrator/templates/bluestork/language/${target_lingo}" ]] && mkdir -p "$local_sandbox_dir/administrator/templates/bluestork/language/${target_lingo}" 
+[[ ! -d "$local_sandbox_dir/administrator/templates/isis/language/${target_lingo}" ]]  && mkdir -p "$local_sandbox_dir/administrator/templates/isis/language/${target_lingo}" 
+[[ ! -d "$local_sandbox_dir/installation/language/${target_lingo}" ]]                  && mkdir -p "$local_sandbox_dir/installation/language/${target_lingo}"
 [[ ! -d "$local_sandbox_dir/installation/installer" ]]                                && mkdir -p "$local_sandbox_dir/installation/installer"
 [[ ! -d "$local_sandbox_dir/installation/sql/mysql" ]]                                && mkdir -p "$local_sandbox_dir/installation/sql/mysql"
-[[ ! -d "$local_sandbox_dir/language/${TARGETLINGO}" ]]                               && mkdir -p "$local_sandbox_dir/language/${TARGETLINGO}"
+[[ ! -d "$local_sandbox_dir/language/${target_lingo}" ]]                               && mkdir -p "$local_sandbox_dir/language/${target_lingo}"
 [[ ! -d "$local_sandbox_dir/language/overrides" ]]                                    && mkdir -p "$local_sandbox_dir/language/overrides"
-[[ ! -d "$local_sandbox_dir/libraries/cms/html/language/${TARGETLINGO}" ]]            && mkdir -p "$local_sandbox_dir/libraries/cms/html/language/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/libraries/src/Filesystem/Meta/language/${TARGETLINGO}" ]] && mkdir -p "$local_sandbox_dir/libraries/src/Filesystem/Meta/language/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/libraries/vendor/joomla/filesystem/meta/language/${TARGETLINGO}" ]] && mkdir -p "$local_sandbox_dir/libraries/vendor/joomla/filesystem/meta/language/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/plugins/system/languagecode/language/${TARGETLINGO}" ]]   && mkdir -p "$local_sandbox_dir/plugins/system/languagecode/language/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/templates/beez3/language/${TARGETLINGO}" ]]               && mkdir -p "$local_sandbox_dir/templates/beez3/language/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/templates/protostar/language/${TARGETLINGO}" ]]           && mkdir -p "$local_sandbox_dir/templates/protostar/language/${TARGETLINGO}"
+[[ ! -d "$local_sandbox_dir/libraries/cms/html/language/${target_lingo}" ]]            && mkdir -p "$local_sandbox_dir/libraries/cms/html/language/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/libraries/src/Filesystem/Meta/language/${target_lingo}" ]] && mkdir -p "$local_sandbox_dir/libraries/src/Filesystem/Meta/language/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/libraries/vendor/joomla/filesystem/meta/language/${target_lingo}" ]] && mkdir -p "$local_sandbox_dir/libraries/vendor/joomla/filesystem/meta/language/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/plugins/system/languagecode/language/${target_lingo}" ]]   && mkdir -p "$local_sandbox_dir/plugins/system/languagecode/language/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/templates/beez3/language/${target_lingo}" ]]               && mkdir -p "$local_sandbox_dir/templates/beez3/language/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/templates/protostar/language/${target_lingo}" ]]           && mkdir -p "$local_sandbox_dir/templates/protostar/language/${target_lingo}"
 
 # Check if directories are there:
-[[ ! -d "$local_sandbox_dir/administrator/language/${TARGETLINGO}" ]]                 && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/language/${TARGETLINGO}"
+[[ ! -d "$local_sandbox_dir/administrator/language/${target_lingo}" ]]                 && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/language/${target_lingo}"
 [[ ! -d "$local_sandbox_dir/administrator/language/overrides" ]]                      && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/language/overrides"
-[[ ! -d "$local_sandbox_dir/administrator/help/${TARGETLINGO}" ]]                     && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/help/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/administrator/modules/mod_multilangstatus/language/${TARGETLINGO}" ]] && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/modules/mod_multilangstatus/language/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/administrator/modules/mod_stats_admin/language/${TARGETLINGO}" ]] && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/modules/mod_stats_admin/language/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/administrator/modules/mod_version/language/${TARGETLINGO}" ]] && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/modules/mod_version/language/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/administrator/templates/hathor/language/${TARGETLINGO}" ]] && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/templates/hathor/language/${TARGETLINGO}" 
-[[ ! -d "$local_sandbox_dir/administrator/templates/bluestork/language/${TARGETLINGO}" ]] &&  DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/templates/bluestork/language/${TARGETLINGO}" 
-[[ ! -d "$local_sandbox_dir/administrator/templates/isis/language/${TARGETLINGO}" ]]  && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/templates/isis/language/${TARGETLINGO}" 
-[[ ! -d "$local_sandbox_dir/installation/language/${TARGETLINGO}" ]]                  && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/installation/language/${TARGETLINGO}"
+[[ ! -d "$local_sandbox_dir/administrator/help/${target_lingo}" ]]                     && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/help/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/administrator/modules/mod_multilangstatus/language/${target_lingo}" ]] && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/modules/mod_multilangstatus/language/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/administrator/modules/mod_stats_admin/language/${target_lingo}" ]] && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/modules/mod_stats_admin/language/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/administrator/modules/mod_version/language/${target_lingo}" ]] && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/modules/mod_version/language/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/administrator/templates/hathor/language/${target_lingo}" ]] && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/templates/hathor/language/${target_lingo}" 
+[[ ! -d "$local_sandbox_dir/administrator/templates/bluestork/language/${target_lingo}" ]] &&  DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/templates/bluestork/language/${target_lingo}" 
+[[ ! -d "$local_sandbox_dir/administrator/templates/isis/language/${target_lingo}" ]]  && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/administrator/templates/isis/language/${target_lingo}" 
+[[ ! -d "$local_sandbox_dir/installation/language/${target_lingo}" ]]                  && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/installation/language/${target_lingo}"
 [[ ! -d "$local_sandbox_dir/installation/installer" ]]                                && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/installation/installer"
 [[ ! -d "$local_sandbox_dir/installation/sql/mysql" ]]                                && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/installation/sql/mysql"
-[[ ! -d "$local_sandbox_dir/language/${TARGETLINGO}" ]]                               && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/language/${TARGETLINGO}"
+[[ ! -d "$local_sandbox_dir/language/${target_lingo}" ]]                               && DIE "[$LINENO] Unexpected directory layout - Expected: $local_sandbox_dir/language/${target_lingo}"
 [[ ! -d "$local_sandbox_dir/language/overrides" ]]                                    && DIE "[$LINENO] Unexpected directory layout - Expected:  $local_sandbox_dir/language/overrides"
-[[ ! -d "$local_sandbox_dir/libraries/cms/html/language/${TARGETLINGO}" ]]            && DIE "[$LINENO] Unexpected subversion directory layout - Expected: $local_sandbox_dir/libraries/cms/html/language/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/libraries/src/Filesystem/Meta/language/${TARGETLINGO}" ]] && DIE "[$LINENO] Unexpected subversion directory layout - Expected: $local_sandbox_dir/libraries/src/Filesystem/Meta/language/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/libraries/vendor/joomla/filesystem/meta/language/${TARGETLINGO}" ]] && DIE "[$LINENO] Unexpected subversion directory layout - Expected: $local_sandbox_dir/libraries/vendor/joomla/filesystem/meta/language/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/plugins/system/languagecode/language/${TARGETLINGO}" ]]   && DIE "[$LINENO] Unexpected subversion directory layout - Expected: $local_sandbox_dir/plugins/system/languagecode/language/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/templates/beez3/language/${TARGETLINGO}" ]]               && DIE "[$LINENO] Unexpected subversion directory layout - Expected: $local_sandbox_dir/templates/beez3/language/${TARGETLINGO}"
-[[ ! -d "$local_sandbox_dir/templates/protostar/language/${TARGETLINGO}" ]]           && DIE "[$LINENO] Unexpected subversion directory layout - Expected: $local_sandbox_dir/templates/protostar/language/${TARGETLINGO}"
+[[ ! -d "$local_sandbox_dir/libraries/cms/html/language/${target_lingo}" ]]            && DIE "[$LINENO] Unexpected subversion directory layout - Expected: $local_sandbox_dir/libraries/cms/html/language/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/libraries/src/Filesystem/Meta/language/${target_lingo}" ]] && DIE "[$LINENO] Unexpected subversion directory layout - Expected: $local_sandbox_dir/libraries/src/Filesystem/Meta/language/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/libraries/vendor/joomla/filesystem/meta/language/${target_lingo}" ]] && DIE "[$LINENO] Unexpected subversion directory layout - Expected: $local_sandbox_dir/libraries/vendor/joomla/filesystem/meta/language/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/plugins/system/languagecode/language/${target_lingo}" ]]   && DIE "[$LINENO] Unexpected subversion directory layout - Expected: $local_sandbox_dir/plugins/system/languagecode/language/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/templates/beez3/language/${target_lingo}" ]]               && DIE "[$LINENO] Unexpected subversion directory layout - Expected: $local_sandbox_dir/templates/beez3/language/${target_lingo}"
+[[ ! -d "$local_sandbox_dir/templates/protostar/language/${target_lingo}" ]]           && DIE "[$LINENO] Unexpected subversion directory layout - Expected: $local_sandbox_dir/templates/protostar/language/${target_lingo}"
 
 
 # Default parameters
 if [[ -n $dictionary ]]; then
   if [[ -z $lexicon ]]; then
-    lexicon=${CWD}/${TARGETLINGO}.sed
+    lexicon=${CWD}/${target_lingo}.sed
   fi
   [[ ! -f ${lexicon} ]]  && DIE "[$LINENO] Could not find the dictionary lookup file: ${lexicon}"
 fi
 
 JP=${source_package%\.*}
-joomla_source_dir=${WORKFOLDER}/${TARGETLINGO}_${JP##*/}
+joomla_source_dir=${workfolder}/${target_lingo}_${JP##*/}
 rm -fr $joomla_source_dir 2>/dev/null
 mkdir -p ${joomla_source_dir}
 if [[ $? -ne 0 ]]; then
@@ -564,38 +489,38 @@ UnpackSourcePackage
 # and the Target lingo distribution
 function DiffFileReport {
   INFO "[$LINENO] Comparing number of .ini files:"
-  find ${local_sandbox_dir} -type f -name "*.ini" | grep ${TARGETLINGO} | sed -e "s|${local_sandbox_dir}||" -e "s|${TARGETLINGO}|LINGO|g" -e 's|^/||' | sort > ${WORKFOLDER}/${TARGETLINGO}_files
-  find ${joomla_source_dir} -type f -name "*.ini" | grep ${SOURCELINGO} | sed -e "s|${joomla_source_dir}||" -e "s|${SOURCELINGO}|LINGO|g" -e 's|^/||' | sort > ${WORKFOLDER}/${SOURCELINGO}_files
+  find ${local_sandbox_dir} -type f -name "*.ini" | grep ${target_lingo} | sed -e "s|${local_sandbox_dir}||" -e "s|${target_lingo}|LINGO|g" -e 's|^/||' | sort > "$tmpfile15"
+  find ${joomla_source_dir} -type f -name "*.ini" | grep ${source_lingo} | sed -e "s|${joomla_source_dir}||" -e "s|${source_lingo}|LINGO|g" -e 's|^/||' | sort > "$tmpfile16"
 
-  SOURCELINGOFILES=`cat ${WORKFOLDER}/${SOURCELINGO}_files | wc -l`
-  TARGETLINGOFILES=`cat ${WORKFOLDER}/${TARGETLINGO}_files | wc -l`
+  SOURCELINGOFILES=`cat "$tmpfile16" | wc -l`
+  TARGETLINGOFILES=`cat "$tmpfile15" | wc -l`
 
-  INFO "[$LINENO] - Number of ${SOURCELINGO} files: $SOURCELINGOFILES"
-  INFO "[$LINENO] - Number of ${TARGETLINGO} files: $TARGETLINGOFILES"
+  INFO "[$LINENO] - Number of ${source_lingo} files: $SOURCELINGOFILES"
+  INFO "[$LINENO] - Number of ${target_lingo} files: $TARGETLINGOFILES"
 
-  INFO "[$LINENO] Files in the ${SOURCELINGO} source translation that don't yet exit in the ${TARGETLINGO} translation:"
-  declare -a aSOURCELINGONotInTARGETLINGO
-  aSOURCELINGONotInTARGETLINGO=(`diff ${WORKFOLDER}/${SOURCELINGO}_files ${WORKFOLDER}/${TARGETLINGO}_files | grep "^<" | sed -e "s/< //g" -e "s/LINGO/${TARGETLINGO}/g"`) 
-  SOURCELINGONOTINTARGETLINGO=${#aSOURCELINGONotInTARGETLINGO[*]}
-  [[ ! -z ${aSOURCELINGONotInTARGETLINGO[*]} ]] && printf "%s\n" ${aSOURCELINGONotInTARGETLINGO[*]-"None"}
-  INFO "[$LINENO]  - Total $SOURCELINGONOTINTARGETLINGO file(s)"
+  INFO "[$LINENO] Files in the ${source_lingo} source translation that don't yet exit in the ${target_lingo} translation:"
+  declare -a a_sourcefiles_not_in_target
+  a_sourcefiles_not_in_target=(`diff "$tmpfile16" "$tmpfile15" | grep "^<" | sed -e "s/< //g" -e "s/LINGO/${target_lingo}/g"`) 
+  num_sourcefiles_not_in_target=${#a_sourcefiles_not_in_target[*]}
+  [[ ! -z ${a_sourcefiles_not_in_target[*]} ]] && printf "%s\n" ${a_sourcefiles_not_in_target[*]-"None"}
+  INFO "[$LINENO]  - Total $num_sourcefiles_not_in_target file(s)"
 
-  INFO "[$LINENO] Files in the ${TARGETLINGO} target translation that don't exit in the ${SOURCELINGO} translation any more:"
-  declare -a aTARGETLINGONotInSOURCELINGO
-  aTARGETLINGONotInSOURCELINGO=(`diff ${WORKFOLDER}/${SOURCELINGO}_files ${WORKFOLDER}/${TARGETLINGO}_files | grep "^>" | sed -e "s/> //g" -e "s/LINGO/${TARGETLINGO}/g"`)
-  TARGETLINGONOTINSOURCELINGO=${#aTARGETLINGONotInSOURCELINGO[*]}
-  [[ ! -z ${aTARGETLINGONotInSOURCELINGO[*]} ]] && printf "%s\n" ${aTARGETLINGONotInSOURCELINGO[*]-"None"}
-  INFO "[$LINENO]  - Total $TARGETLINGONOTINSOURCELINGO file(s)"
+  INFO "[$LINENO] Files in the ${target_lingo} target translation that don't exit in the ${source_lingo} translation any more:"
+  declare -a a_targetfiles_not_in_source
+  a_targetfiles_not_in_source=(`diff "$tmpfile16" "$tmpfile15" | grep "^>" | sed -e "s/> //g" -e "s/LINGO/${target_lingo}/g"`)
+  num_targetfiles_not_in_source=${#a_targetfiles_not_in_source[*]}
+  [[ ! -z ${a_targetfiles_not_in_source[*]} ]] && printf "%s\n" ${a_targetfiles_not_in_source[*]-"None"}
+  INFO "[$LINENO]  - Total $num_targetfiles_not_in_source file(s)"
 
-  if [[ $SOURCELINGONOTINTARGETLINGO != "0" ]] || [[  $TARGETLINGONOTINSOURCELINGO != "0" ]]; then
+  if [[ $num_sourcefiles_not_in_target != "0" ]] || [[  $num_targetfiles_not_in_source != "0" ]]; then
     # Create work file
     # Set up patchfile script
-    PATCHFILE=${WORKFOLDER}/WorkFile_${TARGETLINGO}_files.sh
-    rm $PATCHFILE 2>/dev/null
+    PATCHFILE=${workfolder}/WorkFile_${target_lingo}_files.sh
+    rm "$PATCHFILE" 2>/dev/null
 
     # Make up a patch script file
     printf "#!/bin/bash
-# This script is a summary of the work required to bring the $TARGETLINGO language
+# This script is a summary of the work required to bring the $target_lingo language
 # pack up to the latest Joomla patch level. It was created using the
 # ${0##*/} utility.
 # Run this utility with no command line parameters for further details.
@@ -610,12 +535,12 @@ function DiffFileReport {
 #         If you did everything correcTARGETLINGOy, then further work files will be
 #         created similar to this file. 
 # 
-" > $PATCHFILE
-    printf "# Files in the ${SOURCELINGO} source translation that don't yet exit in the ${TARGETLINGO} translation:\n" >> $PATCHFILE
-    [[ ${SOURCELINGONOTINTARGETLINGO} -eq 0 ]] && printf "# None\n" >> $PATCHFILE
-    for f in "${aSOURCELINGONotInTARGETLINGO[@]}"; do
-      printf "[[ ! -d %s ]] && \\ \n  mkdir -p %s\n"  >> $PATCHFILE $(dirname  ${local_sandbox_dir}/$f) $(dirname  ${local_sandbox_dir}/$f)
-      printf "printf \"; $TARGETLINGO Language Translation for Joomla!
+" > "$PATCHFILE"
+    printf "# Files in the %s source translation that don't yet exit in the %s translation:\n" >> $PATCHFILE ${source_lingo} ${target_lingo}
+    [[ ${num_sourcefiles_not_in_target} -eq 0 ]] && printf "# None\n" >> $PATCHFILE
+    for f in "${a_sourcefiles_not_in_target[@]}"; do
+      printf "[[ ! -d %s ]] && \\ \n  mkdir -p %s\n"  >> $PATCHFILE "$(dirname  ${local_sandbox_dir}/$f)" "$(dirname  ${local_sandbox_dir}/$f)"
+      printf "printf \"; $target_lingo Language Translation for Joomla!
 ; Joomla! Project
 ; Copyright (C) 2005 - $YEAR Open Source Matters. All rights reserved.
 ; License http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL, see LICENSE.php
@@ -628,16 +553,16 @@ function DiffFileReport {
       printf "cd -\n\n" >> $PATCHFILE
     done
 
-    printf "\n# Files in the ${TARGETLINGO} target translation that don't exit in the ${SOURCELINGO} translation any more:\n" >> $PATCHFILE
-    for f in "${aTARGETLINGONotInSOURCELINGO[@]}"; do
-      #g=$(echo $f | sed -e 's|${SOURCELINGO}|${TARGETLINGO}|g')
+    printf "\n# Files in the ${target_lingo} target translation that don't exit in the ${source_lingo} translation any more:\n" >> $PATCHFILE
+    for f in "${a_targetfiles_not_in_source[@]}"; do
+      #g=$(echo $f | sed -e 's|${source_lingo}|${target_lingo}|g')
       printf "git rm ${local_sandbox_dir}/$f\n" >> $PATCHFILE
     done
 
     chmod +x $PATCHFILE
 
     DIE "[$LINENO] Resolve the discrepancy in the number of files first by running 
-    ${WORKFOLDER}/$PATCHFILE. 
+    ${workfolder}/$PATCHFILE. 
     Then run this script ${0##*/} again. 
     Once there is a one-to-one correspondence between all files, this utility will 
     check for changes in the contents of language strings in the .ini files"
@@ -663,44 +588,44 @@ function DiffContentReport {
   esac
 
   INFO "[$LINENO] Changes in language strings of $1 files:"
-  find ${local_sandbox_dir}/$dir -type f -name "*.ini" | grep ${TARGETLINGO} | grep -v "^;" | sort -u > ${WORKFOLDER}/${TARGETLINGO}_files
-  find ${joomla_source_dir}/$dir -type f -name "*.ini" | grep ${SOURCELINGO} | grep -v "^;" | sort -u > ${WORKFOLDER}/${SOURCELINGO}_files
+  find ${local_sandbox_dir}/$dir -type f -name "*.ini" | grep ${target_lingo} | grep -v "^;" | sort -u > "$tmpfile15"
+  find ${joomla_source_dir}/$dir -type f -name "*.ini" | grep ${source_lingo} | grep -v "^;" | sort -u > "$tmpfile16"
 
   # Arrays of Source Language file names:
-  declare -a ASOURCELINGO
-  ASOURCELINGO=(`cat ${WORKFOLDER}/${SOURCELINGO}_files`)
+  declare -a a_source_filenames
+  a_source_filenames=(`cat "$tmpfile16"`)
   # Arrays of Target Language file names:
-  declare -a ATARGETLINGO
-  ATARGETLINGO=(`cat ${WORKFOLDER}/${TARGETLINGO}_files`)
+  declare -a a_target_filenames
+  a_target_filenames=(`cat "$tmpfile15"`)
 
   i=0
-  TSNOTINSOURCELINGO=0
-  SSNOTINTARGETLINGO=0
-  FILESTHATDIFFER=0
+  num_new_strings=0
+  num_old_strings=0
+  num_files_different=0
   while : ; do
-    DEBUG "Checking strings ${ASOURCELINGO[$i]}"
-    cut -f1 -d= -s ${ASOURCELINGO[$i]} | grep -v "^#" | grep -v "^$" | grep -v "^;" | sort -u > ${WORKFOLDER}/SOURCELINGOTemp
-    cut -f1 -d= -s ${ATARGETLINGO[$i]} | grep -v "^#" | grep -v "^$" | grep -v "^;" | sort -u > ${WORKFOLDER}/TARGETLINGOTemp
-    TSNOTINSOURCELINGO=$(($TSNOTINSOURCELINGO+$(diff ${WORKFOLDER}/SOURCELINGOTemp ${WORKFOLDER}/TARGETLINGOTemp | grep "<" | wc -l)))
-    SSNOTINTARGETLINGO=$(($SSNOTINTARGETLINGO+$(diff ${WORKFOLDER}/SOURCELINGOTemp ${WORKFOLDER}/TARGETLINGOTemp | grep ">" | wc -l)))
-    FILESTHATDIFFER=$(($FILESTHATDIFFER + $(diff -q ${WORKFOLDER}/SOURCELINGOTemp ${WORKFOLDER}/TARGETLINGOTemp | wc -l)))
+    DEBUG "[$LINENO] Checking strings ${a_source_filenames[$i]}"
+    cut -f1 -d= -s ${a_source_filenames[$i]} | grep -v "^#" | grep -v "^$" | grep -v "^;" | sort -u > "$tmpfile13"
+    cut -f1 -d= -s ${a_target_filenames[$i]} | grep -v "^#" | grep -v "^$" | grep -v "^;" | sort -u > "$tmpfile14"
+    num_new_strings=$((num_new_strings+$(diff "$tmpfile13" "$tmpfile14" | grep "<" | wc -l)))
+    num_old_strings=$((num_old_strings+$(diff "$tmpfile13" "$tmpfile14" | grep ">" | wc -l)))
+    num_files_different=$((num_files_different + $(diff -q "$tmpfile13" "$tmpfile14" | wc -l)))
     i=$((i+1))
-    [[ $i -ge ${#ASOURCELINGO[*]} ]] && break
+    [[ $i -ge ${#a_source_filenames[*]} ]] && break
   done
 
   INFO "[$LINENO] === Summary of required work for '${1^^}' files: === "
-  SUMMARY1="Number of NEW Strings in ${SOURCELINGO} source language not in ${TARGETLINGO} target language: $TSNOTINSOURCELINGO"
-  SUMMARY2="Number of OLD Strings in ${TARGETLINGO} target language not in ${SOURCELINGO} source language: $SSNOTINTARGETLINGO"
-  SUMMARY3="Total number of ${TARGETLINGO} files that need to be modified: $FILESTHATDIFFER"
-  INFO "[$LINENO] $SUMMARY1"
-  INFO "[$LINENO] $SUMMARY2"
-  INFO "[$LINENO] $SUMMARY3"
+  summary_1="Number of NEW Strings in ${source_lingo} source language not in ${target_lingo} target language: $num_new_strings"
+  summary_2="Number of OLD Strings in ${target_lingo} target language not in ${source_lingo} source language: $num_old_strings"
+  summary_3="Total number of ${target_lingo} files that need to be modified: $num_files_different"
+  INFO "[$LINENO] $summary_1"
+  INFO "[$LINENO] $summary_2"
+  INFO "[$LINENO] $summary_3"
 
   # Set up patchfile script
-  PATCHFILE=${WORKFOLDER}/WorkFile_${TARGETLINGO}_${1}.sh
+  PATCHFILE=${workfolder}/WorkFile_${target_lingo}_${1}.sh
   rm $PATCHFILE 2>/dev/null
 
-  if [[ $FILESTHATDIFFER -eq 0 ]]; then
+  if [[ $num_files_different -eq 0 ]]; then
     INFO "[$LINENO] No changes required for $1 installation"    
     echo "# No changes required for $1 installation" > $PATCHFILE
     return 0
@@ -709,7 +634,7 @@ function DiffContentReport {
 
   # Make up a patch script file
   printf "#!/bin/bash
-# This script is a summary of the work required to bring the $TARGETLINGO language
+# This script is a summary of the work required to bring the $target_lingo language
 # pack up to the latest Joomla patch level. It was created using the 
 # ${0##*/} utility 
 # https://github.com/gerritonagoodday/af-ZA_joomla_lang/tree/master/utilities
@@ -740,52 +665,58 @@ function DiffContentReport {
 # Note 3: If in doubt, re-run ${0##*/} to create 
 #         a new version of this, make your edits and execute it ONCE only.
 # 
-" > $PATCHFILE
-  echo "# Summary of required work"  >> $PATCHFILE
-  echo $SUMMARY1 | sed -e 's/^/# /g' >> $PATCHFILE
-  echo $SUMMARY2 | sed -e 's/^/# /g' >> $PATCHFILE
-  echo $SUMMARY3 | sed -e 's/^/# /g' >> $PATCHFILE
-  chmod +x $PATCHFILE
+" > "$PATCHFILE"
+  { echo "# Summary of required work";
+    echo $summary_1 | sed -e 's/^/# /g'; 
+    echo $summary_2 | sed -e 's/^/# /g'; 
+    echo $summary_3 | sed -e 's/^/# /g'; } >> "$PATCHFILE"
+  chmod +x "$PATCHFILE"
 
   i=0
   jobcount=1
   while : ; do
-    DEBUG "[$LINENO] Checking strings in file ${ASOURCELINGO[$i]}"
-    cut -f1 -d= -s ${ASOURCELINGO[$i]} | grep -v "^#" | grep -v "^$" | sort -u > ${WORKFOLDER}/SOURCELINGOTemp
-    cut -f1 -d= -s ${ATARGETLINGO[$i]} | grep -v "^#" | grep -v "^$" | sort -u > ${WORKFOLDER}/TARGETLINGOTemp
+    DEBUG "[$LINENO] Checking strings in file ${a_source_filenames[$i]}"
+    cut -f1 -d= -s "${a_source_filenames[$i]}" | grep -v "^#" | grep -v "^$" | sort -u > "$tmpfile13"
+    cut -f1 -d= -s "${a_target_filenames[$i]}" | grep -v "^#" | grep -v "^$" | sort -u > "$tmpfile14"
 
-    diff ${WORKFOLDER}/SOURCELINGOTemp ${WORKFOLDER}/TARGETLINGOTemp | grep "^<" > /dev/null
+    diff "$tmpfile13" "$tmpfile14" | grep "^<" > /dev/null
     if [[ $? -eq 0 ]]; then
       MSG1="Job $jobcount: Add the following translated string(s) to the file:"
-      MSG2="${ATARGETLINGO[$i]}"
-      [[ -n $VERBOSE ]] && INFO "[$LINENO] $MSG1 $MSG2"
+      MSG2="${a_target_filenames[$i]}"
+      [ $option_verbose -eq 1 ] && INFO "[$LINENO] $MSG1 $MSG2"
       printf "\n# $MSG1\n# $MSG2\n" >> $PATCHFILE
-      #printf "  Source file:      %s\n" ${ASOURCELINGO[$i]}
-      diff ${WORKFOLDER}/SOURCELINGOTemp ${WORKFOLDER}/TARGETLINGOTemp | grep "^<" | sed -e "s/^< //g" > ${WORKFOLDER}/AddTemp
+      #printf "  Source file:      %s\n" ${a_source_filenames[$i]}
+      diff "$tmpfile13" "$tmpfile14" | grep "^<" | sed -e "s/^< //g" > "$tmpfile2"
       #printf "  Summary:\n"
-      #cat ${WORKFOLDER}/AddTemp | sed -e 's/^/  + /g'
+      #cat "$tmpfile2" | sed -e 's/^/  + /g'
       #printf "  The source string(s) to be added and translated:\n"
-      while read LINE; do
+      while read -r LINE; do
         # Look up source String To Be Translated in Source Language file & Doulbe-Escape quotation marks while we are at it...
         # Does not work for strings, e.g. containing embedded HTML: <strong class="...
 
         # STBT contains: XXXXXX="Source Language String"
-        STBT=`grep -e "^${LINE}=" ${ASOURCELINGO[$i]} | head -1 | sed -e 's|\s*$||' -e 's|=\s*"|=\\\\"|' -e 's|"\s*$|\\\\"|' 2>/dev/null`
+        STBT=`grep -e "^${LINE}=" ${a_source_filenames[$i]} | head -1 | sed -e 's|\s*$||' -e 's|=\s*"|=\\\\"|' -e 's|"\s*$|\\\\"|' 2>/dev/null`
         # Use echo since there may be embedded %s in the strings
-        [[ $VERBOSE -eq 1 ]] && echo "$STBT"
+        [ $option_verbose -eq 1 ] && echo "$STBT"
 
-        if [[ -n $GOOGLELOOKUP ]]; then          
+        if [[ -n $option_googletranslate ]]; then          
           string_id=$(echo ${STBT} | cut -d'=' -f1)
           google_querystring=$(echo ${STBT} | cut -d'=' -f2- | sed -e 's/^\\"//' -e 's/\\"$//')
-          echo "#${string_id}=\"${google_querystring}\"" >> $PATCHFILE
-          google_translation=$(google_translate "$google_querystring" $SOURCELINGO1 $TARGETLINGO1)
-          [[ "$google_translation" -eq "nill" ]] && DIE "[$LINENO] Google Translation API failed. Check your key, network, docs, butt..."
-          [[ $VERBOSE -eq 1 ]] && "[$LINENO] Translated >>${google_querystring}<< to >>${google_translation}<<"
+          echo "#    ${string_id}=\"${google_querystring}\"" >> $PATCHFILE
+          # Deal with wierd Joomla embedded quotation marks: "_QQ_"
+          google_querystring=${google_querystring//\"_QQ_\"/\"}     
+          if [[ -n $DEBUG ]]; then     
+            google_translation=$(google_translate.pl -q="$google_querystring" -s=$source_lingo_1 -t=$target_lingo_1 2>>"${logfile}")
+          else
+            google_translation=$(google_translate.pl -q="$google_querystring" -s=$source_lingo_1 -t=$target_lingo_1 2>/dev/null)
+          fi
+          [ "$google_translation" == "null" ] && DIE "[$LINENO] Google Translation API failed. Check your key, network, docs, dog..."
+          [ $option_verbose -eq 1 ] && INFO "[$LINENO] Translated >>${google_querystring}<< to >>${google_translation}<<"
           echo "echo ${string_id}=\"${google_translation}\"\\" >> $PATCHFILE
         else
           echo "echo \"${STBT}\"\\" >> $PATCHFILE
         fi
-        echo "     >> ${ATARGETLINGO[$i]}" >> $PATCHFILE
+        echo "     >> ${a_target_filenames[$i]}" >> $PATCHFILE
 
         if [[ -n $lexicon ]]; then
           # lexicon LOOKUPSTBTARGETLINGOex=
@@ -799,63 +730,63 @@ function DiffContentReport {
           echo "# lexicon: $STBTARGETLINGOex" >> $PATCHFILE
         fi
 
-        if [[ -n $SUGGESTIONS ]]; then
+        if [[ -n $option_suggestions ]]; then
           # Exact Match
           # Use previous efforts so far for suggestions and look up 100% previous translations for this string ID
           STBTid=$(echo $STBT | sed -e 's/=.*//')
-          grep -hi "${STBTid}=" ${local_sandbox_dir}/administrator/language/${TARGETLINGO}/*.ini 2>/dev/null  > ${WORKFOLDER}/Look1
-          grep -hi "${STBTid}=" ${local_sandbox_dir}/language/${TARGETLINGO}/*.ini 2>/dev/null               >> ${WORKFOLDER}/Look1
-          grep -hi "${STBTid}=" ${local_sandbox_dir}/installation/language/${TARGETLINGO}/*.ini 2>/dev/null  >> ${WORKFOLDER}/Look1
-          grep -hi "${STBTid}=" ${local_sandbox_dir}/plugins/system/languagecode/language/${TARGETLINGO}/*.ini 2>/dev/null  >> ${WORKFOLDER}/Look1
-          grep -hi "${STBTid}=" ${local_sandbox_dir}/templates/*/language/${TARGETLINGO}/*.ini 2>/dev/null  >> ${WORKFOLDER}/Look1
-          num_previous_matches=$(cat ${WORKFOLDER}/Look1 | wc -l)
+          grep -hi "${STBTid}=" ${local_sandbox_dir}/administrator/language/${target_lingo}/*.ini 2>/dev/null  > "$tmpfile4"
+          grep -hi "${STBTid}=" ${local_sandbox_dir}/language/${target_lingo}/*.ini 2>/dev/null               >> "$tmpfile4"
+          grep -hi "${STBTid}=" ${local_sandbox_dir}/installation/language/${target_lingo}/*.ini 2>/dev/null  >> "$tmpfile4"
+          grep -hi "${STBTid}=" ${local_sandbox_dir}/plugins/system/languagecode/language/${target_lingo}/*.ini 2>/dev/null  >> "$tmpfile4"
+          grep -hi "${STBTid}=" ${local_sandbox_dir}/templates/*/language/${target_lingo}/*.ini 2>/dev/null  >> "$tmpfile4"
+          num_previous_matches=$(cat "$tmpfile4" | wc -l)
           # Check if we have at least 1 match from already-existing translated strings
           if [[ $num_previous_matches -gt 0 ]]; then
             # strip preamble & clean up a litTARGETLINGOe
-            cat ${WORKFOLDER}/Look1 | sort -u > ${WORKFOLDER}/Look2
-            sed -e 's/^.*="*//' -e 's/\"$//' -i ${WORKFOLDER}/Look2
-            sed -e 's/:|-/ /' -e 's/%\w*//g' -e 's/  / /' -e 's/  / /' -i ${WORKFOLDER}/Look2
+            cat "$tmpfile4" | sort -u > "$tmpfile5"
+            sed -e 's/^.*="*//' -e 's/\"$//' -i "$tmpfile5"
+            sed -e 's/:|-/ /' -e 's/%\w*//g' -e 's/  / /' -e 's/  / /' -i "$tmpfile5"
             # Get longest line as it is likely to give the best translated context
-            SUGGESTION=$(cat ${WORKFOLDER}/Look2 | awk '{ print length(), $0 | "sort -nr" }'| sed -e 's/^[0-9]*\s*//' | head -1)
+            SUGGESTION=$(cat "$tmpfile5" | awk '{ print length(), $0 | "sort -nr" }'| sed -e 's/^[0-9]*\s*//' | head -1)
             echo "# EXACTMATCH: $SUGGESTION" >> $PATCHFILE
           fi
 
           # Look for same English content that may been translated under a different Id somewhere else
           # Strip preamble - but don't clean up
           STBTs=$(echo $STBT | sed -e 's/^.*=\\*"*//' -e 's/\\*\"*\s*>>.*//' -e 's/\\*\"$//' -e 's/[\.\s]*$//')
-          DEBUG "Looking for the string \"$STBTs\" in\n\t${joomla_source_dir}/administrator/language/${SOURCELINGO}\n\t${joomla_source_dir}/language/${SOURCELINGO}\n\t${joomla_source_dir}/installation/language/${SOURCELINGO}\n\t${joomla_source_dir}/plugins/system/languagecode/language/${SOURCELINGO}\n\t${joomla_source_dir}/templates/\*/language/${SOURCELINGO}"
-          grep -hi "${STBTs}" ${joomla_source_dir}/administrator/language/${SOURCELINGO}/*.ini 2>/dev/null >  ${WORKFOLDER}/Look6
-          grep -hi "${STBTs}" ${joomla_source_dir}/language/${SOURCELINGO}/*.ini 2>/dev/null               >> ${WORKFOLDER}/Look6
-          grep -hi "${STBTs}" ${joomla_source_dir}/installation/language/${SOURCELINGO}/*.ini 2>/dev/null  >> ${WORKFOLDER}/Look6
-          grep -hi "${STBTs}" ${joomla_source_dir}/plugins/system/languagecode/language/${SOURCELINGO}/*.ini 2>/dev/null  >> ${WORKFOLDER}/Look6
-          grep -hi "${STBTs}" ${joomla_source_dir}/templates/*/language/${SOURCELINGO}/*.ini 2>/dev/null  >> ${WORKFOLDER}/Look6
+          DEBUG "[$LINENO] Looking for the string \"$STBTs\" in\n\t${joomla_source_dir}/administrator/language/${source_lingo}\n\t${joomla_source_dir}/language/${source_lingo}\n\t${joomla_source_dir}/installation/language/${source_lingo}\n\t${joomla_source_dir}/plugins/system/languagecode/language/${source_lingo}\n\t${joomla_source_dir}/templates/\*/language/${source_lingo}"
+          grep -hi "${STBTs}" ${joomla_source_dir}/administrator/language/${source_lingo}/*.ini 2>/dev/null >  "tmpfile12"
+          grep -hi "${STBTs}" ${joomla_source_dir}/language/${source_lingo}/*.ini 2>/dev/null               >> "tmpfile12"
+          grep -hi "${STBTs}" ${joomla_source_dir}/installation/language/${source_lingo}/*.ini 2>/dev/null  >> "tmpfile12"
+          grep -hi "${STBTs}" ${joomla_source_dir}/plugins/system/languagecode/language/${source_lingo}/*.ini 2>/dev/null  >> "tmpfile12"
+          grep -hi "${STBTs}" ${joomla_source_dir}/templates/*/language/${source_lingo}/*.ini 2>/dev/null  >> "tmpfile12"
           # Remove the string with this Id
-          grep -v "^${STBTid}=" ${WORKFOLDER}/Look6 | sort -u > ${WORKFOLDER}/Look7
-          if [[ $(cat ${WORKFOLDER}/Look7 | wc -l) -gt 0 ]]; then
-            while read LINE; do 
+          grep -v "^${STBTid}=" "tmpfile12" | sort -u > "$tmpfile6"
+          if [[ $(cat "$tmpfile6" | wc -l) -gt 0 ]]; then
+            while read -r LINE; do 
               # Get Id
               STBTid=$(echo $STBT | sed -e 's/=.*//')
-              DEBUG "FOUND. Check if the string Id \"$STBTid\" has already been translated in\n\t${local_sandbox_dir}/administrator/language/${TARGETLINGO}\n \t${local_sandbox_dir}/language/${TARGETLINGO}\n\t${local_sandbox_dir}/installation/language/${TARGETLINGO}\n\t${local_sandbox_dir}/plugins/system/languagecode/language/${TARGETLINGO}\n\t${local_sandbox_dir}/templates/\*/language/${TARGETLINGO}"
+              DEBUG "[$LINENO] FOUND. Check if the string Id \"$STBTid\" has already been translated in\n\t${local_sandbox_dir}/administrator/language/${target_lingo}\n \t${local_sandbox_dir}/language/${target_lingo}\n\t${local_sandbox_dir}/installation/language/${target_lingo}\n\t${local_sandbox_dir}/plugins/system/languagecode/language/${target_lingo}\n\t${local_sandbox_dir}/templates/\*/language/${target_lingo}"
               # Now search through text of already-translated strings
-              grep -hi ${STBTid} ${local_sandbox_dir}/administrator/language/${TARGETLINGO}/*.ini 2>/dev/null  > ${WORKFOLDER}/Look8
-              grep -hi ${STBTid} ${local_sandbox_dir}/language/${TARGETLINGO}/*.ini 2>/dev/null               >> ${WORKFOLDER}/Look8
-              grep -hi ${STBTid} ${local_sandbox_dir}/installation/language/${TARGETLINGO}/*.ini 2>/dev/null  >> ${WORKFOLDER}/Look8
-              grep -hi ${STBTid} ${local_sandbox_dir}/plugins/system/languagecode/language/${TARGETLINGO}/*.ini 2>/dev/null  >> ${WORKFOLDER}/Look8
-              grep -hi ${STBTid} ${local_sandbox_dir}/templates/*/language/${TARGETLINGO}/*.ini 2>/dev/null   >> ${WORKFOLDER}/Look8
-            done < ${WORKFOLDER}/Look7
-            if [[ $(cat ${WORKFOLDER}/Look8 | wc -l) -gt 0 ]]; then
-              DEBUG "String Id \"${STBTid}\" has already been translated."
+              grep -hi ${STBTid} ${local_sandbox_dir}/administrator/language/${target_lingo}/*.ini 2>/dev/null  > "$tmpfile7"
+              grep -hi ${STBTid} ${local_sandbox_dir}/language/${target_lingo}/*.ini 2>/dev/null               >> "$tmpfile7"
+              grep -hi ${STBTid} ${local_sandbox_dir}/installation/language/${target_lingo}/*.ini 2>/dev/null  >> "$tmpfile7"
+              grep -hi ${STBTid} ${local_sandbox_dir}/plugins/system/languagecode/language/${target_lingo}/*.ini 2>/dev/null  >> "$tmpfile7"
+              grep -hi ${STBTid} ${local_sandbox_dir}/templates/*/language/${target_lingo}/*.ini 2>/dev/null   >> "$tmpfile7"
+            done < "$tmpfile6"
+            if [[ $(cat "$tmpfile7" | wc -l) -gt 0 ]]; then
+              DEBUG "[$LINENO] String Id \"${STBTid}\" has already been translated."
               printf "# PREVIOUS TRANSOURCELINGOATIONS: \n" >> $PATCHFILE
               # Strip preambles
-              sed -e 's/^.*=\\*"*//' -e 's/\\*\"*\s*>>.*//' -e 's/\\*\"$//' -i  ${WORKFOLDER}/Look8
+              sed -e 's/^.*=\\*"*//' -e 's/\\*\"*\s*>>.*//' -e 's/\\*\"$//' -i  "$tmpfile7"
               # Select longest translated string
-              cat ${WORKFOLDER}/Look8 | sort -u | awk '{ print length(), $0 | "sort -nr" }'| sed -e 's/^[0-9]*\s*//' | head -10 > ${WORKFOLDER}/Look9              
-              while read LINE; do
+              cat "$tmpfile7" | sort -u | awk '{ print length(), $0 | "sort -nr" }'| sed -e 's/^[0-9]*\s*//' | head -10 > "$tmpfile8"              
+              while read -r LINE; do
                 echo "# $LINE" >> $PATCHFILE
-              done < ${WORKFOLDER}/Look9
+              done < "$tmpfile8"
             fi
           else
-            DEBUG "The string \"${STBTs}\" has not previously been transalated"
+            DEBUG "[$LINENO] The string \"${STBTs}\" has not previously been transalated"
           fi
 
           # Look up longest word from lexiconned string in already-existing translated strings
@@ -865,31 +796,31 @@ function DiffContentReport {
             for l in $source_packageACED_LINE; do [[ ${#l} -gt $len ]] && [[ ${l} =~ [^_] ]] && WORD=$l; len=${#l}; done
             WORD=$(echo $WORD | sed -e 's/.*=//' -e 's/\"//g' -e 's/\.$//')
             if [[ ${#WORD} -ge 4 ]]; then
-              grep -hi ${WORD} ${local_sandbox_dir}/administrator/language/${TARGETLINGO}/*.ini 2>/dev/null >  ${WORKFOLDER}/Look3
-              grep -hi ${WORD} ${local_sandbox_dir}/language/${TARGETLINGO}/*.ini 2>/dev/null               >> ${WORKFOLDER}/Look3
-              grep -hi ${WORD} ${local_sandbox_dir}/installation/language/${TARGETLINGO}/*.ini 2>/dev/null  >> ${WORKFOLDER}/Look3
-              grep -hi ${WORD} ${local_sandbox_dir}/plugins/system/languagecode/language/${TARGETLINGO}/*.ini 2>/dev/null  >> ${WORKFOLDER}/Look3
-              grep -hi ${WORD} ${local_sandbox_dir}/templates/*/language/${TARGETLINGO}/*.ini 2>/dev/null    >> ${WORKFOLDER}/Look3
+              grep -hi ${WORD} ${local_sandbox_dir}/administrator/language/${target_lingo}/*.ini 2>/dev/null >  "$tmpfile9"
+              grep -hi ${WORD} ${local_sandbox_dir}/language/${target_lingo}/*.ini 2>/dev/null               >> "$tmpfile9"
+              grep -hi ${WORD} ${local_sandbox_dir}/installation/language/${target_lingo}/*.ini 2>/dev/null  >> "$tmpfile9"
+              grep -hi ${WORD} ${local_sandbox_dir}/plugins/system/languagecode/language/${target_lingo}/*.ini 2>/dev/null  >> "$tmpfile9"
+              grep -hi ${WORD} ${local_sandbox_dir}/templates/*/language/${target_lingo}/*.ini 2>/dev/null    >> "$tmpfile9"
             fi
-            if [[ $(wc -l ${WORKFOLDER}/Look3 | cut -f1 -d" ") -lt 2 ]]; then
+            if [[ $(wc -l "$tmpfile9" | cut -f1 -d" ") -lt 2 ]]; then
               # Look for second-longest word but ignore module names
               for l in $source_packageACED_LINE; do [[ ${#l} -gt $len && ${#l} -lt ${#WORD} ]] && [[ ${l} =~ [^_] ]] && WORD2=$l; len=${#l}; done
               WORD2=$(echo $WORD2 | sed -e 's/.*=//' -e 's/\"//g' -e 's/\.$//')
               if [[ ${#WORD2} -ge 4 ]]; then
-                grep -hi ${WORD2} ${local_sandbox_dir}/administrator/language/${TARGETLINGO}/*.ini 2>/dev/null >  ${WORKFOLDER}/Look3
-                grep -hi ${WORD2} ${local_sandbox_dir}/language/${TARGETLINGO}/*.ini 2>/dev/null               >> ${WORKFOLDER}/Look3
-                grep -hi ${WORD2} ${local_sandbox_dir}/installation/language/${TARGETLINGO}/*.ini 2>/dev/null  >> ${WORKFOLDER}/Look3
-                grep -hi ${WORD2} ${local_sandbox_dir}/plugins/system/languagecode/language/${TARGETLINGO}/*.ini 2>/dev/null  >> ${WORKFOLDER}/Look3
-                grep -hi ${WORD2} ${local_sandbox_dir}/templates/*/language/${TARGETLINGO}/*.ini 2>/dev/null   >> ${WORKFOLDER}/Look3
+                grep -hi ${WORD2} ${local_sandbox_dir}/administrator/language/${target_lingo}/*.ini 2>/dev/null >  "$tmpfile9"
+                grep -hi ${WORD2} ${local_sandbox_dir}/language/${target_lingo}/*.ini 2>/dev/null               >> "$tmpfile9"
+                grep -hi ${WORD2} ${local_sandbox_dir}/installation/language/${target_lingo}/*.ini 2>/dev/null  >> "$tmpfile9"
+                grep -hi ${WORD2} ${local_sandbox_dir}/plugins/system/languagecode/language/${target_lingo}/*.ini 2>/dev/null  >> "$tmpfile9"
+                grep -hi ${WORD2} ${local_sandbox_dir}/templates/*/language/${target_lingo}/*.ini 2>/dev/null   >> "$tmpfile9"
               fi
             fi
 
             # strip preamble & clean up a litTARGETLINGOe
-            sed -e 's/^.*="*//' -e 's/\"$//' -i ${WORKFOLDER}/Look3
-            sed -e 's/:|-/ /' -e 's/%\w*//g' -e 's/  / /' -e 's/  / /' -i ${WORKFOLDER}/Look3
+            sed -e 's/^.*="*//' -e 's/\"$//' -i "$tmpfile9"
+            sed -e 's/:|-/ /' -e 's/%\w*//g' -e 's/  / /' -e 's/  / /' -i "$tmpfile9"
 
             # dedupe & order & # remove Help-links
-            sort -u -f ${WORKFOLDER}/Look3 | grep -v "_" > ${WORKFOLDER}/Look4
+            sort -u -f "$tmpfile9" | grep -v "_" > "tmpfile10"
 
             # Only keep candidate strings that have about a many words as the source string has
             # Word count in string, rounding down:
@@ -897,40 +828,40 @@ function DiffContentReport {
             maxWords=$(echo $numWords | awk '{print $0 * 1.5}' | sed -e 's/\..*//')
             minWords=$(echo $numWords | awk '{print $0 * 0.5}' | sed -e 's/\..*//')
             # Pick candidate strings that have word counts in this range
-            cat ${WORKFOLDER}/Look4 | awk '{if (lenth < "'"$minWords"'" && length > "'"$maxWords"'") print ""; else print $0 }' | sort -u > ${WORKFOLDER}/Look5
-            if [[ $(wc -l ${WORKFOLDER}/Look5 | cut -f1 -d" ") -gt 0 ]]; then
-              cat ${WORKFOLDER}/Look5 | awk '{ print length(), $0 | "sort -nr" }'| sed -e 's/^[0-9]*\s*//' | head -10 > ${WORKFOLDER}/Look6
-              printf "# SUGGESTIONS:\n" >> $PATCHFILE
-              while read SUGGESTION; do
+            cat "tmpfile10" | awk '{if (lenth < "'"$minWords"'" && length > "'"$maxWords"'") print ""; else print $0 }' | sort -u > "tmpfile11"
+            if [[ $(wc -l "tmpfile11" | cut -f1 -d" ") -gt 0 ]]; then
+              cat "tmpfile11" | awk '{ print length(), $0 | "sort -nr" }'| sed -e 's/^[0-9]*\s*//' | head -10 > "tmpfile12"
+              printf "# option_suggestions:\n" >> $PATCHFILE
+              while read -r SUGGESTION; do
                 [[ -z $SUGGESTION ]] && continue
                 echo "# $SUGGESTION" >> $PATCHFILE
-              done < ${WORKFOLDER}/Look6
+              done < "tmpfile12"
             fi
           fi
         fi
-      done < ${WORKFOLDER}/AddTemp
+      done < "$tmpfile2"
       jobcount=$((jobcount+1))
     fi
 
-    diff ${WORKFOLDER}/SOURCELINGOTemp ${WORKFOLDER}/TARGETLINGOTemp | grep "^>" > /dev/null
+    diff "$tmpfile13" "$tmpfile14" | grep "^>" > /dev/null
     if [[ $? -eq 0 ]]; then
       MSG1="Job $jobcount: Remove the following string(s) from the file:"
-      MSG2="${ATARGETLINGO[$i]}"
-      [[ $VERBOSE -eq 1 ]] && INFO "$MSG1\n$MSG2"
+      MSG2="${a_target_filenames[$i]}"
+      [ $option_verbose -eq 1 ] && INFO "$MSG1\n$MSG2"
       printf "\n# $MSG1\n# $MSG2\n" >> $PATCHFILE
-      diff ${WORKFOLDER}/SOURCELINGOTemp ${WORKFOLDER}/TARGETLINGOTemp | grep "^>" | sed -e "s/^> //g" | sort > ${WORKFOLDER}/DelTemp
-      while read LINE; do
+      diff "$tmpfile13" "$tmpfile14" | grep "^>" | sed -e "s/^> //g" | sort > "$tmpfile3"
+      while read -r LINE; do
         # String To Be Removed
-        [[ $VERBOSE -eq 1 ]] && printf "$LINE\n"
-        printf "# $LINE:\n" >> $PATCHFILE
-        ESC_LINE=$(echo $LINE | sed -e 's|\/|\\\/|g'  -e 's|\!|\\\!|g' -e 's|\*|\\\*|g' -e 's|`|\\`|g')
-        printf "sed -e \"/${ESC_LINE}\s*=/d\" -i ${ATARGETLINGO[$i]}\n" >> $PATCHFILE;
-      done < ${WORKFOLDER}/DelTemp
+        [ $option_verbose -eq 1 ] && INFO "[$LINENO] Setting instructions to remove $LINE"
+        printf "# %s:\n" "$LINE" >> "$PATCHFILE"
+        ESC_LINE=$(echo "$LINE" | sed -e 's|\/|\\\/|g'  -e 's|\!|\\\!|g' -e 's|\*|\\\*|g' -e 's|`|\\`|g')
+        printf "sed -e \"/%s\s*=/d\" -i %s\n" >> "$PATCHFILE" ${ESC_LINE} ${a_target_filenames[$i]}
+      done < "$tmpfile3"
       jobcount=$((jobcount+1))
     fi
 
     i=$((i+1))
-    [[ $i -ge ${#ASOURCELINGO[*]} ]] && break
+    [[ $i -ge ${#a_source_filenames[*]} ]] && break
   done  # while :
 }  # DiffContentReport
 
@@ -946,9 +877,9 @@ You can either manually apply the changes recommended above and re-run
 this utility until no further changes are required. 
 
 Or, you can do all the translations by editing the patch file 
-$PATCHFILE in $WORKFOLDER and then executing it:
+$PATCHFILE in $workfolder and then executing it:
 
-  $ cd $WORKFOLDER
+  $ cd $workfolder
   $ nano $PATCHFILE
   $ ./$PATCHFILE 
 
@@ -961,6 +892,4 @@ changes back in to subversion with the commands:
 
 "
 
-rm $TMPFILE 2>/dev/null
-EXITCODE=1
-exit $EXITCODE
+exit 0
