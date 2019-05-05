@@ -132,7 +132,7 @@ LOCALE="am_ET.uft8, am_ET.UTF-8, am, am_ET, amh_ET, am-ET, amharic, amharic-et, 
 # First day of the week in the locale, mostly 1 = Sunday, sometimes 2 = Monday or 6=Saturday
 FIRSTDAY=1
 # Name of package author or team
-AUTHORNAME="Gerrit Hoekstra"
+AUTHORNAME="Gerrit Hoekstra & Solomon Mekonnen"
 # Email address of author or team
 AUTHOREMAIL="gerrit@hoekstra.co.uk"
 # Installation Configuration:
@@ -145,7 +145,7 @@ AUTHOREMAIL="gerrit@hoekstra.co.uk"
 #     Find your flag in http://www.flags.net
 LINGOFLAG="http://www.flags.net/images/largeflags/ETHP0001.GIF"
 #     The website that hosts this translation team
-LINGOSITE="http://forge.joomla.org/gf/project/afrikaans_taal"
+LINGOSITE="https://github.com/gerritonagoodday/am-ET_joomla_lang"
 
 # This auto update will only work once this am-ET has become an official Joomla language
 UPDATE_URL="http://update.joomla.org/language/translationlist_3.xml"
