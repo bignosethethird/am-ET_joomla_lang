@@ -147,3 +147,5 @@ LINGOFLAG="http://www.flags.net/images/largeflags/ETHP0001.GIF"
 #     The website that hosts this translation team
 LINGOSITE="http://forge.joomla.org/gf/project/afrikaans_taal"
 
+# This auto update will only work once this am-ET has become an official Joomla language
+UPDATE_URL="http://update.joomla.org/language/translationlist_3.xml"
