@@ -1,0 +1,53 @@
+[2019.05.05 16:48:17][xx-XX][INFO ][181] === BEGIN [PID 17598] 
+[2019.05.05 16:48:17][xx-XX][INFO ][184] Checking configuration file
+[2019.05.05 16:48:17][xx-XX][INFO ][187] Reading configuration file configuration.sh
+[2019.05.05 16:48:17][am-ET][INFO ][209] Check sandbox directory is where this is launched from
+[2019.05.05 16:48:17][am-ET][INFO ][225] Get Snapshots from branch 3.9.5v1
+[2019.05.05 16:48:17][am-ET][INFO ][258] Copying Source Files from am-ET_joomla_lang/administrator into admin
+[2019.05.05 16:48:18][am-ET][INFO ][262] Copying Source Files from am-ET_joomla_lang/language into site
+[2019.05.05 16:48:18][am-ET][INFO ][266] Copying Source Files from am-ET_joomla_lang/libraries into site
+[2019.05.05 16:48:18][am-ET][INFO ][268] Copying Source Files from am-ET_joomla_lang/plugins into site
+[2019.05.05 16:48:18][am-ET][INFO ][270] Copying Source Files from am-ET_joomla_lang/templates into site
+[2019.05.05 16:48:18][am-ET][INFO ][551] Make file /home/gerrit/joomlawork/admin/index.html
+[2019.05.05 16:48:18][am-ET][INFO ][553] Make file /home/gerrit/joomlawork/site/index.html
+[2019.05.05 16:48:18][am-ET][INFO ][555] Make file /home/gerrit/joomlawork/site/am-ET.xml
+[2019.05.05 16:48:18][am-ET][INFO ][290] Create /home/gerrit/joomlawork/site/am-ET.xml XML File for 'site' language pack
+[2019.05.05 16:48:18][am-ET][DEBUG][291] MkXMLInstallHeader site - filename: /home/gerrit/joomlawork/site/am-ET.xml 
+[2019.05.05 16:48:18][am-ET][INFO ][557] Make file /home/gerrit/joomlawork/admin/am-ET.xml
+[2019.05.05 16:48:18][am-ET][INFO ][290] Create /home/gerrit/joomlawork/admin/am-ET.xml XML File for 'admin' language pack
+[2019.05.05 16:48:18][am-ET][DEBUG][291] MkXMLInstallHeader admin - filename: /home/gerrit/joomlawork/admin/am-ET.xml 
+[2019.05.05 16:48:18][am-ET][INFO ][560] Make file /home/gerrit/joomlawork/admin/install.xml
+[2019.05.05 16:48:18][am-ET][INFO ][330] Create /home/gerrit/joomlawork/admin/install.xml XML header for 'admin' language pack
+[2019.05.05 16:48:18][am-ET][DEBUG][331] MkXMLInstallHeader admin - filename: /home/gerrit/joomlawork/admin/install.xml 
+[2019.05.05 16:48:18][am-ET][INFO ][371] Create /home/gerrit/joomlawork/admin/install.xml long description for 'admin' language pack
+[2019.05.05 16:48:18][am-ET][DEBUG][372] MkXMLInstallDescription admin - filename: /home/gerrit/joomlawork/admin/install.xml 
+[2019.05.05 16:48:18][am-ET][INFO ][459] Create file list in /home/gerrit/joomlawork/admin/install.xml file for 'admin' language pack
+[2019.05.05 16:48:18][am-ET][DEBUG][460] MkXMLInstallFileList admin - filename: /home/gerrit/joomlawork/admin/install.xml 
+[2019.05.05 16:48:18][am-ET][INFO ][519] Create /home/gerrit/joomlawork/admin/install.xml header for 'admin' language pack
+[2019.05.05 16:48:18][am-ET][DEBUG][520] MkXMLInstallFileFooter admin - filename: /home/gerrit/joomlawork/admin/install.xml 
+[2019.05.05 16:48:18][am-ET][INFO ][566] Make file /home/gerrit/joomlawork/site/install.xml
+[2019.05.05 16:48:18][am-ET][INFO ][330] Create /home/gerrit/joomlawork/site/install.xml XML header for 'site' language pack
+[2019.05.05 16:48:18][am-ET][DEBUG][331] MkXMLInstallHeader site - filename: /home/gerrit/joomlawork/site/install.xml 
+[2019.05.05 16:48:18][am-ET][INFO ][371] Create /home/gerrit/joomlawork/site/install.xml long description for 'site' language pack
+[2019.05.05 16:48:18][am-ET][DEBUG][372] MkXMLInstallDescription site - filename: /home/gerrit/joomlawork/site/install.xml 
+[2019.05.05 16:48:18][am-ET][INFO ][459] Create file list in /home/gerrit/joomlawork/site/install.xml file for 'site' language pack
+[2019.05.05 16:48:18][am-ET][DEBUG][460] MkXMLInstallFileList site - filename: /home/gerrit/joomlawork/site/install.xml 
+[2019.05.05 16:48:18][am-ET][INFO ][519] Create /home/gerrit/joomlawork/site/install.xml header for 'site' language pack
+[2019.05.05 16:48:18][am-ET][DEBUG][520] MkXMLInstallFileFooter site - filename: /home/gerrit/joomlawork/site/install.xml 
+[2019.05.05 16:48:18][am-ET][INFO ][572] Make file /home/gerrit/joomlawork/pkg_am-ET.xml
+[2019.05.05 16:48:18][am-ET][INFO ][330] Create /home/gerrit/joomlawork/pkg_am-ET.xml XML header for 'full' language pack
+[2019.05.05 16:48:18][am-ET][DEBUG][331] MkXMLInstallHeader full - filename: /home/gerrit/joomlawork/pkg_am-ET.xml 
+[2019.05.05 16:48:18][am-ET][INFO ][371] Create /home/gerrit/joomlawork/pkg_am-ET.xml long description for 'full' language pack
+[2019.05.05 16:48:18][am-ET][DEBUG][372] MkXMLInstallDescription full - filename: /home/gerrit/joomlawork/pkg_am-ET.xml 
+[2019.05.05 16:48:18][am-ET][INFO ][380] Checking if /home/gerrit/git/am-ET_joomla_lang/utilities/http://www.flags.net/images/largeflags/ETHP0001.GIF exists...
+[2019.05.05 16:48:18][am-ET][INFO ][393] Assuming http://www.flags.net/images/largeflags/ETHP0001.GIF is a URL
+[2019.05.05 16:48:18][am-ET][INFO ][499] Create install file list in /home/gerrit/joomlawork/pkg_am-ET.xml file for 'full' language pack
+[2019.05.05 16:48:18][am-ET][DEBUG][500] MkXMLInstallFileList full - filename: /home/gerrit/joomlawork/pkg_am-ET.xml 
+[2019.05.05 16:48:18][am-ET][INFO ][519] Create /home/gerrit/joomlawork/pkg_am-ET.xml header for 'full' language pack
+[2019.05.05 16:48:18][am-ET][DEBUG][520] MkXMLInstallFileFooter full - filename: /home/gerrit/joomlawork/pkg_am-ET.xml 
+[2019.05.05 16:48:18][am-ET][INFO ][578] Make file /home/gerrit/joomlawork/admin_am-ET.zip
+[2019.05.05 16:48:18][am-ET][INFO ][581] Make file site_am-ET.zip
+[2019.05.05 16:48:18][am-ET][INFO ][585] Make file am-ET_joomla_lang_full_3.9.5v1.zip
+[2019.05.05 16:48:18][am-ET][INFO ][595] The latest package snapshots are in the build sandbox in /home/gerrit/joomlawork
+[2019.05.05 16:48:18][am-ET][INFO ][596] ============= END ============
+[2019.05.05 16:48:18][am-ET][INFO ][167] === END [PID 17598] on signal EXIT. Cleaning up ===
