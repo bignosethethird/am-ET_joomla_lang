@@ -293,7 +293,6 @@ function MkLingoXML {
 
   cat <<EOF > $FILENAME
 <?xml version="1.0" encoding="utf-8"?>
-<!-- This file is created by \$Id: MkLanguagepackSnapshotBuild.sh 1957 2015-07-04 16:59:51Z gerrit_hoekstra $ -->
 <metafile version="${JOOMLABASEVERSION}" client="${CLIENT}" method="upgrade">
   <tag>${TARGETLINGO}</tag>
   <name>${LINGOEXONYM}</name>
@@ -333,14 +332,13 @@ function MkXMLInstallHeader {
 
   # Make up XML header and footer
   # (deal with exclamation marks in XML)
-  echo '<?xml version="1.0" encoding="utf-8" ?>' > $FILENAME
-  echo '<!-- This file is created by $Id: MkLanguagepackSnapshotBuild.sh 1957 2015-07-04 16:59:51Z gerrit_hoekstra $ -->' >> $FILENAME
+  echo '<?xml version="1.0" encoding="utf-8" ?>' > $FILENAME  
   if [[ $TYPE == "package" ]]; then
     echo "<extension version=\"${JOOMLABASEVERSION}\" type=\"${TYPE}\" method=\"upgrade\">" >> $FILENAME
     echo "  <name>${LINGOEXONYM} (${TARGETCOUNTRY})</name>" >> $FILENAME
     echo "  <packagename>${TARGETLINGO}</packagename>" >> $FILENAME
-    echo "  <packager>$PROGNAME</packager>" >> $FILENAME
-    echo "  <packagerurl>joomla4africa.org</packagerurl>" >> $FILENAME
+    echo "  <packager>${PROGNAME}</packager>" >> $FILENAME
+    echo "  <packagerurl>${LINGOSITE}</packagerurl>" >> $FILENAME
   else
     echo "<extension version=\"${JOOMLABASEVERSION}\" type=\"${TYPE}\" method=\"upgrade\" client=\"${CLIENT}\" >" >> $FILENAME
     echo "  <name>${LINGOEXONYM} (${TARGETCOUNTRY})</name>" >> $FILENAME
