@@ -3,7 +3,7 @@
 # Translation version: [major].[minor].[point].[revision], used inside the XML definition, no leading zeros.
 # Only change this value when building a new version. It must be in the form x.y.z.n
 # - other variants of this version will be calculated
-TRANSLATIONVERSION_XML="3.9.5.1"
+TRANSLATIONVERSION_XML="3.9.5.3"
 
 # What it this file for?
 # ~~~~~~~~~~~~~~~~~~~~~
@@ -126,13 +126,21 @@ LOCAL_INSTALL="እባክዎ በጣም የቅርብ ጊዜውን የትርጉም 
 LOCAL_ALLRIGHTS="መብቱ በህግ የተጠበቀ ነው"
 # Right To Left = 0 for most languages
 RTL=0
+
 # Locales by which this lnaguage is known
 # e.g. for German: de_DE.utf8, de_DE.UTF-8, de_DE, deu_DE, de, german, german-de, de, deu, germany
 LOCALE="am_ET.uft8, am_ET.UTF-8, am, am_ET, amh_ET, am-ET, amharic, amharic-et, amh, ethiopia, ኢትዮጵያ"
-# First day of the week in the locale, mostly 1 = Sunday, sometimes 2 = Monday or 6=Saturday
+# First day of the working week in the locale, mostly 1 = Monday or 6=Saturday
 FIRSTDAY=1
+# First day of actual week, mostly 0 = Sunday (default)
+# Last day of actual week, mostly 6 = Saturday (default)
+#  - in which case, specify: "0,6"
+WEEKEND="0,6"
+# Calendar. Choose from "gregorian" (default), "persian", "japanese", "buddhist", "chinese", "indian", "islamic", "hebrew", "coptic", "ethiopic"
+CALENDAR="ethiopic"
+
 # Name of package author or team
-AUTHORNAME="Gerrit Hoekstra & Solomon Mekonnen"
+AUTHORNAME="Reviewer: Solomon Mekonnen"
 # Email address of author or team
 AUTHOREMAIL="gerrit@hoekstra.co.uk"
 # Installation Configuration:

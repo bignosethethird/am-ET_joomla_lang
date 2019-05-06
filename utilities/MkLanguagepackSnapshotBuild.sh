@@ -312,6 +312,8 @@ function MkLingoXML {
       <rtl>${RTL}</rtl>
       <locale>${LOCALE}</locale>
       <firstDay>${FIRSTDAY}</firstDay>
+      <weekEnd>${WEEKEND}</weekEnd>
+      <calendar>${CALENDAR}</calendar>      
   </metadata>
   <params />
 </metafile>
@@ -339,6 +341,7 @@ function MkXMLInstallHeader {
     echo "  <packagename>${TARGETLINGO}</packagename>" >> $FILENAME
     echo "  <packager>${PROGNAME}</packager>" >> $FILENAME
     echo "  <packagerurl>${LINGOSITE}</packagerurl>" >> $FILENAME
+    echo "  <blockChildUninstall>true</blockChildUninstall>" >> $FILENAME
   else
     echo "<extension version=\"${JOOMLABASEVERSION}\" type=\"${TYPE}\" method=\"upgrade\" client=\"${CLIENT}\" >" >> $FILENAME
     echo "  <name>${LINGOEXONYM} (${TARGETCOUNTRY})</name>" >> $FILENAME
