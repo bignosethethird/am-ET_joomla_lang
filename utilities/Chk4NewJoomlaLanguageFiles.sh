@@ -91,12 +91,12 @@
 
 
 # Set your local working folder (no trailing slashes)
-workfolder="${HOME}/joomlawork"
-if [ ! -d $workfolder ]; then
+workfolder="${PWD}/../.build"
+if [ ! -d "$workfolder" ]; then
   printf "[$LINENO] Making $workfolder...\n"
   mkdir -p $workfolder
 fi
-if [ ! -d $workfolder ]; then
+if [ ! -d "$workfolder" ]; then
   printf "[$LINENO] Working folder $workfolder does not exist."
   exit 1
 fi
@@ -234,7 +234,7 @@ current translation package in line with the latest package.
 
 Run this from the utilities directory.
 
-Usage: ${0##*/} -p|--package_source=[Joomla_x.x.x-Full_Package.zip|JoomlaSourceCodeDirectory] [-l|--lexicon[=Dictionary File]] 
+Usage: %s -p|--package_source=[Joomla_x.x.x-Full_Package.zip|JoomlaSourceCodeDirectory] [-l|--lexicon[=Dictionary File]] 
 [-g|--google] [-s|--suggestions]
 
 OPTIONS (Note that there is an '=' sign between argument and value):
@@ -257,16 +257,17 @@ OPTIONS (Note that there is an '=' sign between argument and value):
           repository and suggests candidates.
   -v, --verbose
           Verbose screen output. All output will also be logged to files in 
-          $workfolder
+          %s
   -d, --debug
-          Output debug messages to screen and $workfolder
+          Output debug messages to screen and 
+          %s
   -h, --help
           Displays this text
 
 Examples:
-   ./${0##*/} -p=~/Downloads/Joomla_x.y.z-Stable-Full_Package.zip
+   ./%s -p=~/Downloads/Joomla_x.y.z-Stable-Full_Package.zip
    or
-   ./${0##*/} -p=~/git/joomla-cms
+   ./%s -p=~/git/joomla-cms
 
 Note:
   This utility does not push any changes to the remote Git repository.
@@ -274,7 +275,7 @@ Note:
   $ cd ~/git/af-ZA_joomla_lang
   $ git pull
 
-"
+" ${0##*/} ${logfile} ${logfile} ${0##*/} ${0##*/}
   exit 1
 }
 
@@ -384,17 +385,12 @@ if [[ -z $target_lingo ]]; then
   DIE "[$LINENO] Target language not specified"
 fi
 # Check input parameters from command line
-if [[ -z $source_package ]]; then
-  DIE "[$LINENO] Joomla installation package not specified" 
-fi
-if [[ ! -f $source_package && ! -d $source_package ]]; then
-  DIE "[$LINENO] Joomla source package or source repository $source_package could not be found."
-fi
-if [[ -n $dictionary && ! -f $lexicon ]]; then
-  DIE "[$LINENO] Lexicon file $lexicon could not be found. Specify full path."
-fi
+[ -z "$source_package" ] && DIE "[$LINENO] Joomla installation package not specified" 
+[ ! -e "$source_package" ] && DIE "[$LINENO] Joomla source package or source repository $source_package could not be found."
+[ -n "$dictionary" ] && [ ! -f "$lexicon" ] && DIE "[$LINENO] Lexicon file $lexicon could not be found. Specify full path."
+
 # Default parameters
-[[ -n $option_googletranslate ]] && unset $option_suggestions
+[ -n "$option_googletranslate" ] && unset $option_suggestions
 
 # Make ISO-639-1 language code from ISO-639-0 codes: (e.g. en-GB => en)
 source_lingo_1=${source_lingo/-[A-Z]*/}
@@ -489,8 +485,8 @@ UnpackSourcePackage
 # and the Target lingo distribution
 function DiffFileReport {
   INFO "[$LINENO] Comparing number of .ini files:"
-  find ${local_sandbox_dir} -type f -name "*.ini" | grep ${target_lingo} | sed -e "s|${local_sandbox_dir}||" -e "s|${target_lingo}|LINGO|g" -e 's|^/||' | sort > "$tmpfile15"
-  find ${joomla_source_dir} -type f -name "*.ini" | grep ${source_lingo} | sed -e "s|${joomla_source_dir}||" -e "s|${source_lingo}|LINGO|g" -e 's|^/||' | sort > "$tmpfile16"
+  find ${local_sandbox_dir}/{administrator,installation,language,libraries,plugins,templates} -type f -name "*.ini" | grep ${target_lingo} | sed -e "s|${local_sandbox_dir}||" -e "s|${target_lingo}|LINGO|g" -e 's|^/||' | sort > "$tmpfile15"
+  find ${joomla_source_dir}/{administrator,installation,language,libraries,plugins,templates} -type f -name "*.ini" | grep ${source_lingo} | sed -e "s|${joomla_source_dir}||" -e "s|${source_lingo}|LINGO|g" -e 's|^/||' | sort > "$tmpfile16"
 
   SOURCELINGOFILES=`cat "$tmpfile16" | wc -l`
   TARGETLINGOFILES=`cat "$tmpfile15" | wc -l`
@@ -561,8 +557,8 @@ function DiffFileReport {
 
     chmod +x $PATCHFILE
 
-    DIE "[$LINENO] Resolve the discrepancy in the number of files first by running 
-    ${workfolder}/$PATCHFILE. 
+    DIE "[$LINENO] Resolve the discrepancy in the number of files first by running     
+    $PATCHFILE. 
     Then run this script ${0##*/} again. 
     Once there is a one-to-one correspondence between all files, this utility will 
     check for changes in the contents of language strings in the .ini files"
@@ -683,7 +679,7 @@ function DiffContentReport {
     if [[ $? -eq 0 ]]; then
       MSG1="Job $jobcount: Add the following translated string(s) to the file:"
       MSG2="${a_target_filenames[$i]}"
-      [ $option_verbose -eq 1 ] && INFO "[$LINENO] $MSG1 $MSG2"
+      [[ -n $option_verbose ]] && INFO "[$LINENO] $MSG1 $MSG2"
       printf "\n# $MSG1\n# $MSG2\n" >> $PATCHFILE
       #printf "  Source file:      %s\n" ${a_source_filenames[$i]}
       diff "$tmpfile13" "$tmpfile14" | grep "^<" | sed -e "s/^< //g" > "$tmpfile2"
@@ -697,7 +693,7 @@ function DiffContentReport {
         # STBT contains: XXXXXX="Source Language String"
         STBT=`grep -e "^${LINE}=" ${a_source_filenames[$i]} | head -1 | sed -e 's|\s*$||' -e 's|=\s*"|=\\\\"|' -e 's|"\s*$|\\\\"|' 2>/dev/null`
         # Use echo since there may be embedded %s in the strings
-        [ $option_verbose -eq 1 ] && echo "$STBT"
+        [[ -n $option_verbose ]] && echo "$STBT"
 
         if [[ -n $option_googletranslate ]]; then          
           string_id=$(echo ${STBT} | cut -d'=' -f1)
@@ -711,7 +707,7 @@ function DiffContentReport {
             google_translation=$(google_translate.pl -q="$google_querystring" -s=$source_lingo_1 -t=$target_lingo_1 2>/dev/null)
           fi
           [ "$google_translation" == "null" ] && DIE "[$LINENO] Google Translation API failed. Check your key, network, docs, dog..."
-          [ $option_verbose -eq 1 ] && INFO "[$LINENO] Translated >>${google_querystring}<< to >>${google_translation}<<"
+          [[ -n $option_verbose ]] && INFO "[$LINENO] Translated >>${google_querystring}<< to >>${google_translation}<<"
           echo "echo ${string_id}=\"${google_translation}\"\\" >> $PATCHFILE
         else
           echo "echo \"${STBT}\"\\" >> $PATCHFILE
@@ -847,12 +843,12 @@ function DiffContentReport {
     if [[ $? -eq 0 ]]; then
       MSG1="Job $jobcount: Remove the following string(s) from the file:"
       MSG2="${a_target_filenames[$i]}"
-      [ $option_verbose -eq 1 ] && INFO "$MSG1\n$MSG2"
+      [[ -n $option_verbose ]] && INFO "$MSG1\n$MSG2"
       printf "\n# $MSG1\n# $MSG2\n" >> $PATCHFILE
       diff "$tmpfile13" "$tmpfile14" | grep "^>" | sed -e "s/^> //g" | sort > "$tmpfile3"
       while read -r LINE; do
         # String To Be Removed
-        [ $option_verbose -eq 1 ] && INFO "[$LINENO] Setting instructions to remove $LINE"
+        [[ -n $option_verbose ]] && INFO "[$LINENO] Setting instructions to remove $LINE"
         printf "# %s:\n" "$LINE" >> "$PATCHFILE"
         ESC_LINE=$(echo "$LINE" | sed -e 's|\/|\\\/|g'  -e 's|\!|\\\!|g' -e 's|\*|\\\*|g' -e 's|`|\\`|g')
         printf "sed -e \"/%s\s*=/d\" -i %s\n" >> "$PATCHFILE" ${ESC_LINE} ${a_target_filenames[$i]}
@@ -881,14 +877,17 @@ $PATCHFILE in $workfolder and then executing it:
 
   $ cd $workfolder
   $ nano $PATCHFILE
+  ... do translations in the file and save ...
   $ ./$PATCHFILE 
 
-Do the same for the ..._site and the ..._admin files.
+Do the same for the other Workfiles.
 If you are happy with the changes, you should check the
-changes back in to subversion with the commands:
+changes back into the repository with the commands:
 
   $ cd $local_sandbox_dir
-  $ svn ci -m \"Patched to next Joomla release\"
+  $ git add . 
+  $ git commit -m \"Patched to next Joomla release\"
+  $ git push
 
 "
 

@@ -94,24 +94,24 @@ COMMAND="$0" # Save command
 
 
 # local working folder (no trailing slashes)
-WORKFOLDER="${HOME}/joomlawork"
-if [[ ! -d $WORKFOLDER ]]; then
-  printf "[$LINENO] Making $WORKFOLDER...\n"
-  mkdir -p $WORKFOLDER
+workfolder="${PWD}/../.build"
+if [[ ! -d $workfolder ]]; then
+  printf "[$LINENO] Making $workfolder...\n"
+  mkdir -p $workfolder
 fi
-if [[ ! -d $WORKFOLDER ]]; then
-  printf "[$LINENO] Working folder $WORKFOLDER does not exist."
+if [[ ! -d $workfolder ]]; then
+  printf "[$LINENO] Working folder $workfolder does not exist."
   exit 1
 fi
-if [[ ! -w $WORKFOLDER ]]; then
-  printf "[$LINENO] Working folder $WORKFOLDER is not writable."
+if [[ ! -w $workfolder ]]; then
+  printf "[$LINENO] Working folder $workfolder is not writable."
   exit 1
 fi
 
 # Set up logging - this is important if we run this as a cron job
 PROGNAME=${0##*/}
 # Log in work folder
-LOGFILE="${WORKFOLDER}/${PROGNAME%\.*}.log"
+LOGFILE="${workfolder}/${PROGNAME%\.*}.log"
 [[ ! -f $LOGFILE ]] && touch $LOGFILE 2>/dev/null
 if [[ $? -ne 0 ]]; then
   # Log in HOME
@@ -165,10 +165,10 @@ function DIE {
 #============================================================================#
 function cleanup {
   INFO "[$LINENO] === END [PID $$] on signal $1. Cleaning up ==="
-  rm -fr $WORKFOLDER/site 2>/dev/null
-  rm -fr $WORKFOLDER/admin 2>/dev/null
-  rm $WORKFOLDER/admin_${TL}.zip 2>/dev/null
-  rm $WORKFOLDER/site_${TL}.zip 2>/dev/null
+  rm -fr $workfolder/site 2>/dev/null
+  rm -fr $workfolder/admin 2>/dev/null
+  rm $workfolder/admin_${TL}.zip 2>/dev/null
+  rm $workfolder/site_${TL}.zip 2>/dev/null
   exit
 }
 for sig in KILL TERM INT EXIT; do trap "cleanup $sig" "$sig" ; done
@@ -213,14 +213,14 @@ function CreateWorkspace {
   # Local subversion sandbox in workfolder to pull latest code cut down to
   local_sandbox_dir="$parentdir"
 
-  rm -fr $WORKFOLDER/admin 2>/dev/null
-  mkdir -p $WORKFOLDER/admin
-  rm -fr $WORKFOLDER/site 2>/dev/null
-  mkdir -p $WORKFOLDER/site
+  rm -fr $workfolder/admin 2>/dev/null
+  mkdir -p $workfolder/admin
+  rm -fr $workfolder/site 2>/dev/null
+  mkdir -p $workfolder/site
 }
 
 
-# Current Working Directory is $WORKFOLDER = joomlawork
+# Current Working Directory is $workfolder = joomlawork
 function GetLastSnapshots {
   INFO "[$LINENO] Get Snapshots from branch $TRANSLATIONVERSION"
   # Get the content of the snapshot folder
@@ -253,22 +253,22 @@ function GetLastSnapshots {
 }
 
 # Collate translated files into snapshot build folders 'site' and 'admin'
-# Current Working Directory is $WORKFOLDER = joomlawork
+# Current Working Directory is $workfolder = joomlawork
 function CopyTranslationsToPackagingArea {
   INFO "[$LINENO] Copying Source Files from $GITREPONAME/administrator into admin"
-  find $local_sandbox_dir/administrator/language -type f -name "${TARGETLINGO}.*.ini" | grep -v "\.git" | sort -u | xargs -I {} cp {} $WORKFOLDER/admin/.
-  find $local_sandbox_dir/administrator/language -type f -name "${TARGETLINGO}.ini"   | grep -v "\.git" | sort -u | xargs -I {} cp {} $WORKFOLDER/admin/.
-  find $local_sandbox_dir/administrator/language -type f -name "${TARGETLINGO}.localise.php" | grep -v "\.git" | sort -u | xargs -I {} cp {} $WORKFOLDER/admin/.
+  find $local_sandbox_dir/administrator/language -type f -name "${TARGETLINGO}.*.ini" | grep -v "\.git" | sort -u | xargs -I {} cp {} $workfolder/admin/.
+  find $local_sandbox_dir/administrator/language -type f -name "${TARGETLINGO}.ini"   | grep -v "\.git" | sort -u | xargs -I {} cp {} $workfolder/admin/.
+  find $local_sandbox_dir/administrator/language -type f -name "${TARGETLINGO}.localise.php" | grep -v "\.git" | sort -u | xargs -I {} cp {} $workfolder/admin/.
   INFO "[$LINENO] Copying Source Files from $GITREPONAME/language into site"
-  find $local_sandbox_dir/language -type f -name "${TARGETLINGO}.*.ini" | grep -v "\.git" | sort -u | xargs -I {} cp {} $WORKFOLDER/site/.
-  find $local_sandbox_dir/language -type f -name "${TARGETLINGO}.ini"   | grep -v "\.git" | sort -u | xargs -I {} cp {} $WORKFOLDER/site/.
-  find $local_sandbox_dir/language -type f -name "${TARGETLINGO}.localise.php" | grep -v "\.git" | sort -u | xargs -I {} cp {} $WORKFOLDER/site/.
+  find $local_sandbox_dir/language -type f -name "${TARGETLINGO}.*.ini" | grep -v "\.git" | sort -u | xargs -I {} cp {} $workfolder/site/.
+  find $local_sandbox_dir/language -type f -name "${TARGETLINGO}.ini"   | grep -v "\.git" | sort -u | xargs -I {} cp {} $workfolder/site/.
+  find $local_sandbox_dir/language -type f -name "${TARGETLINGO}.localise.php" | grep -v "\.git" | sort -u | xargs -I {} cp {} $workfolder/site/.
   INFO "[$LINENO] Copying Source Files from $GITREPONAME/libraries into site"
-  find $local_sandbox_dir/libraries -type f -name "${TARGETLINGO}.*.ini" | grep -v "\.git" | sort -u | xargs -I {} cp {} $WORKFOLDER/site/.
+  find $local_sandbox_dir/libraries -type f -name "${TARGETLINGO}.*.ini" | grep -v "\.git" | sort -u | xargs -I {} cp {} $workfolder/site/.
   INFO "[$LINENO] Copying Source Files from $GITREPONAME/plugins into site"
-  find $local_sandbox_dir/plugins -type f -name "${TARGETLINGO}.*.ini"   | grep -v "\.git" | sort -u | xargs -I {} cp {} $WORKFOLDER/site/.
+  find $local_sandbox_dir/plugins -type f -name "${TARGETLINGO}.*.ini"   | grep -v "\.git" | sort -u | xargs -I {} cp {} $workfolder/site/.
   INFO "[$LINENO] Copying Source Files from $GITREPONAME/templates into site"
-  find $local_sandbox_dir/templates -type f -name "${TARGETLINGO}.*.ini" | grep -v "\.git" | sort -u | xargs -I {} cp {} $WORKFOLDER/site/.
+  find $local_sandbox_dir/templates -type f -name "${TARGETLINGO}.*.ini" | grep -v "\.git" | sort -u | xargs -I {} cp {} $workfolder/site/.
 }
 
 # Parameters: 1. admin, site
@@ -295,7 +295,7 @@ function MkLingoXML {
 <?xml version="1.0" encoding="utf-8"?>
 <metafile version="${JOOMLABASEVERSION}" client="${CLIENT}" method="upgrade">
   <tag>${TARGETLINGO}</tag>
-  <name>${LINGOEXONYM}</name>
+  <name>${LINGOEXONYM} (${TARGETLINGO})</name>
   <nativeName>${LINGOINDONYM}</nativeName>
   <description>${PACKAGE_DESC} - Joomla! ${JOOMLVERSION}</description>
   <version>${TRANSLATIONVERSION_XML}</version>
@@ -337,14 +337,16 @@ function MkXMLInstallHeader {
   echo '<?xml version="1.0" encoding="utf-8" ?>' > $FILENAME  
   if [[ $TYPE == "package" ]]; then
     echo "<extension version=\"${JOOMLABASEVERSION}\" type=\"${TYPE}\" method=\"upgrade\">" >> $FILENAME
-    echo "  <name>${LINGOEXONYM} (${TARGETCOUNTRY})</name>" >> $FILENAME
+    echo "  <name>${LINGOEXONYM} (${TARGETLINGO})</name>" >> $FILENAME
+    echo "  <nativename>${LINGOINDONYM}</nativename>" >> $FILENAME
     echo "  <packagename>${TARGETLINGO}</packagename>" >> $FILENAME
     echo "  <packager>${PROGNAME}</packager>" >> $FILENAME
     echo "  <packagerurl>${LINGOSITE}</packagerurl>" >> $FILENAME
     echo "  <blockChildUninstall>true</blockChildUninstall>" >> $FILENAME
   else
     echo "<extension version=\"${JOOMLABASEVERSION}\" type=\"${TYPE}\" method=\"upgrade\" client=\"${CLIENT}\" >" >> $FILENAME
-    echo "  <name>${LINGOEXONYM} (${TARGETCOUNTRY})</name>" >> $FILENAME
+    echo "  <name>${LINGOEXONYM} (${TARGETLINGO})</name>" >> $FILENAME
+    echo "  <nativename>${LINGOINDONYM}</nativename>" >> $FILENAME
   fi
 
   cat <<EOF >> $FILENAME
@@ -549,42 +551,42 @@ CopyTranslationsToPackagingArea
 #  o TARGETLINGO_joomla_lang_install_X.X.XvX.zip TODO
 #  o TARGETLINGO_joomla_lang_full_X.X.XvX.zip
 
-INFO "[$LINENO] Make file $WORKFOLDER/admin/index.html"
-MkIndexHTML "$WORKFOLDER/admin/index.html"
-INFO "[$LINENO] Make file $WORKFOLDER/site/index.html"
-MkIndexHTML "$WORKFOLDER/site/index.html"
-INFO "[$LINENO] Make file $WORKFOLDER/site/${TARGETLINGO}.xml"
-MkLingoXML site "$WORKFOLDER/site/${TARGETLINGO}.xml"
-INFO "[$LINENO] Make file $WORKFOLDER/admin/${TARGETLINGO}.xml"
-MkLingoXML admin "$WORKFOLDER/admin/${TARGETLINGO}.xml"
+INFO "[$LINENO] Make file $workfolder/admin/index.html"
+MkIndexHTML "$workfolder/admin/index.html"
+INFO "[$LINENO] Make file $workfolder/site/index.html"
+MkIndexHTML "$workfolder/site/index.html"
+INFO "[$LINENO] Make file $workfolder/site/${TARGETLINGO}.xml"
+MkLingoXML site "$workfolder/site/${TARGETLINGO}.xml"
+INFO "[$LINENO] Make file $workfolder/admin/${TARGETLINGO}.xml"
+MkLingoXML admin "$workfolder/admin/${TARGETLINGO}.xml"
 
-INFO "[$LINENO] Make file $WORKFOLDER/admin/install.xml"
-MkXMLInstallHeader admin "$WORKFOLDER/admin/install.xml"
-MkXMLInstallDescription admin "$WORKFOLDER/admin/install.xml"
-MkXMLInstallFileList admin "$WORKFOLDER/admin/install.xml"
-MkXMLInstallFileFooter admin "$WORKFOLDER/admin/install.xml"
+INFO "[$LINENO] Make file $workfolder/admin/install.xml"
+MkXMLInstallHeader admin "$workfolder/admin/install.xml"
+MkXMLInstallDescription admin "$workfolder/admin/install.xml"
+MkXMLInstallFileList admin "$workfolder/admin/install.xml"
+MkXMLInstallFileFooter admin "$workfolder/admin/install.xml"
 
-INFO "[$LINENO] Make file $WORKFOLDER/site/install.xml"
-MkXMLInstallHeader site "$WORKFOLDER/site/install.xml"
-MkXMLInstallDescription site "$WORKFOLDER/site/install.xml"
-MkXMLInstallFileList site "$WORKFOLDER/site/install.xml"
-MkXMLInstallFileFooter site "$WORKFOLDER/site/install.xml"
+INFO "[$LINENO] Make file $workfolder/site/install.xml"
+MkXMLInstallHeader site "$workfolder/site/install.xml"
+MkXMLInstallDescription site "$workfolder/site/install.xml"
+MkXMLInstallFileList site "$workfolder/site/install.xml"
+MkXMLInstallFileFooter site "$workfolder/site/install.xml"
 
-INFO "[$LINENO] Make file $WORKFOLDER/pkg_${TARGETLINGO}.xml"
-MkXMLInstallHeader full "$WORKFOLDER/pkg_${TARGETLINGO}.xml"
-MkXMLInstallDescription full "$WORKFOLDER/pkg_${TARGETLINGO}.xml"
-MkXMLPackageInstallFileList full "$WORKFOLDER/pkg_${TARGETLINGO}.xml"
-MkXMLInstallFileFooter full "$WORKFOLDER/pkg_${TARGETLINGO}.xml"
+INFO "[$LINENO] Make file $workfolder/pkg_${TARGETLINGO}.xml"
+MkXMLInstallHeader full "$workfolder/pkg_${TARGETLINGO}.xml"
+MkXMLInstallDescription full "$workfolder/pkg_${TARGETLINGO}.xml"
+MkXMLPackageInstallFileList full "$workfolder/pkg_${TARGETLINGO}.xml"
+MkXMLInstallFileFooter full "$workfolder/pkg_${TARGETLINGO}.xml"
 
-INFO "[$LINENO] Make file $WORKFOLDER/admin_${TARGETLINGO}.zip"
-zip -r -j -q $WORKFOLDER/admin_${TARGETLINGO} $WORKFOLDER/admin/*
+INFO "[$LINENO] Make file $workfolder/admin_${TARGETLINGO}.zip"
+zip -r -j -q $workfolder/admin_${TARGETLINGO} $workfolder/admin/*
 
 INFO "[$LINENO] Make file site_${TARGETLINGO}.zip"
-zip -r -j -q $WORKFOLDER/site_${TARGETLINGO} $WORKFOLDER/site/*
+zip -r -j -q $workfolder/site_${TARGETLINGO} $workfolder/site/*
 
 packageName=$(echo $packageNameTemplate | sed -e 's/TYPE/full/')
 INFO "[$LINENO] Make file $packageName"
-zip -r -j -q $WORKFOLDER/$packageName $WORKFOLDER/site_${TARGETLINGO}.zip $WORKFOLDER/admin_${TARGETLINGO}.zip $WORKFOLDER/pkg_${TARGETLINGO}.xml
+zip -r -j -q $workfolder/$packageName $workfolder/site_${TARGETLINGO}.zip $workfolder/admin_${TARGETLINGO}.zip $workfolder/pkg_${TARGETLINGO}.xml
 
 #INFO "[$LINENO] Adding any new language installation packages to Git Releases"
 # TODO
@@ -593,5 +595,5 @@ zip -r -j -q $WORKFOLDER/$packageName $WORKFOLDER/site_${TARGETLINGO}.zip $WORKF
 #INFO "[$LINENO] Cleaning up..."
 #cd $STARTDIR
 
-INFO "[$LINENO] The latest package snapshots are in the build sandbox in ${WORKFOLDER}"
+INFO "[$LINENO] The latest package snapshots are in the build sandbox in ${workfolder}"
 INFO "[$LINENO] ============= END ============"

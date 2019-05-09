@@ -140,7 +140,7 @@ WEEKEND="0,6"
 CALENDAR="ethiopic"
 
 # Name of package author or team
-AUTHORNAME="Reviewer: Solomon Mekonnen"
+AUTHORNAME="Translation Team to be announced"
 # Email address of author or team
 AUTHOREMAIL="gerrit@hoekstra.co.uk"
 # Installation Configuration:
